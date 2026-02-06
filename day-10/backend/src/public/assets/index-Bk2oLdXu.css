@@ -1,0 +1,1 @@
+*{margin:0;padding:0;box-sizing:border-box}html,body,#root{height:100%;width:100%}html{background-color:#000;font-family:system-ui;color:#fff}.notebook{padding:1rem;background-color:#1b1b1b;border-radius:.7rem;max-width:20rem}.notebooks,.newnotebook{display:flex;gap:1rem;padding-block:1rem;padding-inline:2rem}
