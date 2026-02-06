@@ -1,15 +1,23 @@
 
 import axios from 'axios'
+import { useEffect } from 'react';
 
 
 function App() {
   const [notes, setNotes] = useState([])
 
-    axios.get('http://localhost:3000/api/notes')
-      .then((res) => {
-        console.log(res.data.notes);
-        setNotes(res.data.note);
-      })
+    
+
+      useEffect(()=>{
+        axios.get('http://localhost:3000/api/notes')
+        .then((res) => {
+          console.log(res.data.notes);
+          setNotes(res.data.note);
+        })
+        .catch((err)=>{
+          console.log("error fecting in notes", err);
+        })
+      },[])
       
 
 

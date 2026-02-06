@@ -1,6 +1,6 @@
-const express = require("express")
-const noteModel = require("./models/note.model")
 const cors = require('cors')
+const noteModel = require("./models/note.model")
+const express = require("express")
 const app = express()
 app.use(express.json())
 app.use(cors())
