@@ -1,0 +1,39 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, 
+body,
+#root {
+  height: 100%;
+  width:100%;
+}
+
+html{
+  background-color: black;
+  font-family: system-ui;
+  color: white;
+}
+
+.note{
+  padding: 1rem;
+  background-color: rgb(27, 27, 27);
+  border-radius: 0.7rem;
+  max-width: 20rem;
+}
+
+.notes{
+  display: flex;
+  gap: 1rem;
+  padding-block: 1rem;
+  padding-inline: 2rem;
+}
+
+.newnote{
+  display: flex;
+  gap: 1rem;
+  padding-block: 1rem;
+  padding-inline: 2rem;
+}
