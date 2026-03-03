@@ -12,3 +12,7 @@ const followSchema = new mongoose.Schema({
         required: [true, "followee is required"]
     }
 })
+
+const followModel = mongoose.model("follows", followSchema)
+
+module.exports = followModel
