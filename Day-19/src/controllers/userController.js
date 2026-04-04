@@ -1,23 +1,52 @@
-const followModel =require('../models/follow.model')
+const followModel = require("../models/follow.model");
+const userModel = require("../models/user.model");
 
+async function followUserController(req, res) {
+  const followerUsername = req.user.username;
+  const followeeUsername = req.params.username;
 
-async function followUserController(req, res){
+  if (!followeeUsername) {
+    return res.status(400).json({
+      message: "followee username is required",
+    });
+  }
 
-    const followerUsername  = req.user.username
-    const followeeUsername = req.params.username
+  if (followerUsername === followeeUsername) {
+    return res.status(400).json({
+      message: "you cannot follow yourself",
+    });
+  }
 
-    const followRecord = await followModel.create({
-        follower : followerUsername,
-        followee : followerUsername
-    })
+  const followeeUser = await userModel.findOne({ username: followeeUsername });
 
-    res.status(201).json({
-        message : `you are following ${followeeUsername}`,
-        follow : followRecord
-    })
+  if (!followeeUser) {
+    return res.status(404).json({
+      message: "user to follow not found",
+    });
+  }
 
+  const existingFollow = await followModel.findOne({
+    follower: followerUsername,
+    followee: followeeUsername,
+  });
+
+  if (existingFollow) {
+    return res.status(409).json({
+      message: `you are already following ${followeeUsername}`,
+    });
+  }
+
+  const followRecord = await followModel.create({
+    follower: followerUsername,
+    followee: followeeUsername,
+  });
+
+  res.status(201).json({
+    message: `you are following ${followeeUsername}`,
+    follow: followRecord,
+  });
 }
 
-module.exports ={
-    followUserController
-}
+module.exports = {
+  followUserController,
+};
