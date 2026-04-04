@@ -1,5 +1,5 @@
 const express = require('express')
-const { createPostController, getPostController, getPostDetailsController } = require('../controllers/postController')
+const { createPostController, getPostController, getPostDetailsController, likePostController } = require('../controllers/postController')
 const postRouter = express.Router()
 const indentifyUser = require("../middleware/auth.middleware")
 
@@ -18,5 +18,14 @@ postRouter.get("/",indentifyUser,getPostController)
  * -also checks wheater the post belongs to the user that request came form
  */
 postRouter.get("/details/:postId",indentifyUser,getPostDetailsController)
+
+
+
+/**
+ * @Routes Likes : post /api/like/:Postid
+ * @description to like any post with id provided in the request params
+ * 
+ */
+postRouter.post("/like/:postid", indentifyUser , likePostController)
 
 module.exports = postRouter
