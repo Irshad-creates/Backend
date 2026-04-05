@@ -63,9 +63,9 @@ async function unfollowUserController(req, res){
     })
   }
 
-  await followModel.findOneAndDelete(isUserAlreadyfollowing._id)
+  await followModel.findByIdAndDelete(isUserAlreadyfollowing._id)
 
-  res.status(201).json({
+  res.status(200).json({
     message : `you unfollowed ${followeeUsername}`
   })
 

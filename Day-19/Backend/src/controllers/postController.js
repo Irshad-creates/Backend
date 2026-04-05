@@ -1,6 +1,5 @@
-const postRouter = require("../routes/post.route")
-require('dotenv').config()
-const jwt = require('jsonwebtoken')
+const path = require("path")
+require('dotenv').config({ path: path.resolve(__dirname, "../../.env") })
 
 const Imagekit = require('@imagekit/nodejs/index.js')
 const { toFile } = require("@imagekit/nodejs/index.js")
@@ -12,8 +11,11 @@ const imagekit= new Imagekit({
 })
 
 async function createPostController(req, res){
-
-
+    if(!req.file){
+        return res.status(400).json({
+            message : "image file is required"
+        })
+    }
 
     const file = await imagekit.files.upload({
         file : await toFile(Buffer.from(req.file.buffer), "files"),

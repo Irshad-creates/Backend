@@ -28,6 +28,9 @@ async function registerController(req, res) {
         profileImage
     })
 
+    const safeUser = user.toObject()
+    delete safeUser.password
+
     /**
      * sending response with jwt_token 
      */
@@ -42,7 +45,7 @@ async function registerController(req, res) {
 
     res.status(201).json({
         message : "user registered succesfully",
-        user,
+        user: safeUser,
         token
     })
 }
@@ -77,11 +80,14 @@ async function loginController(req, res){
         {expiresIn : "1d"}
     )
 
+    const safeUser = user.toObject()
+    delete safeUser.password
+
     res.cookie("token",token)
 
     res.status(200).json({
         message:"user logined succesfully",
-        user,
+        user: safeUser,
         token
     })
 
