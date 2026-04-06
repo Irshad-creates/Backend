@@ -9,7 +9,13 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   
-  const {handleRegister} = useAuth()
+  const {handleRegister, loading } = useAuth()
+
+  if(loading){
+    return(
+      <h1>Loading...</h1>
+    )
+  }
 
   async function handleFormSubmit(e) {
     e.preventDefault();
