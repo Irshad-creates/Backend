@@ -1,8 +1,35 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import "../style/feed.scss"
+import 'remixicon/fonts/remixicon.css'
+import Post from '../components/post'
+import { usePost } from '../hooks/usePost'
+
 
 const Feed = () => {
+
+  const {feed, handleGetFeed, loading} = usePost()
+
+  useEffect(()=>{
+    handleGetFeed()
+  },[])
+
+  if(loading || !feed){
+    return(<main><h1>Feed is Loading...</h1></main>)
+  }
+
+  console.log(feed);
+  
+
   return (
-    <div>Feed</div>
+    <main className='feed-page'>
+        <div className="feed">
+            <div className="posts">
+                {feed.map(post=>{
+                  return <Post user={post.user} post={post} />
+                })}
+            </div>
+        </div>
+    </main>
   )
 }
 
