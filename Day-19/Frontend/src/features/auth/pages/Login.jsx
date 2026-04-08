@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "../style/form.scss";
-import { Link, useNavigate } from "react-router";
-import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 const Login = () => {
@@ -20,7 +19,7 @@ const Login = () => {
   async function submitHandler(e) {
     e.preventDefault();
 
-    handleLogin(username, password)
+    await handleLogin(username, password)
     .then(res=>{
       console.log(res)
       navigate("/")

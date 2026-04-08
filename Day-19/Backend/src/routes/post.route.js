@@ -1,5 +1,5 @@
 const express = require('express')
-const { createPostController, getPostController, getPostDetailsController, likePostController } = require('../controllers/postController')
+const { createPostController, getPostController, getPostDetailsController, likePostController, getFeedController } = require('../controllers/postController')
 const postRouter = express.Router()
 const indentifyUser = require("../middleware/auth.middleware")
 
@@ -27,5 +27,13 @@ postRouter.get("/details/:postId",indentifyUser,getPostDetailsController)
  * 
  */
 postRouter.post("/like/:postid", indentifyUser , likePostController)
+
+
+/**
+ * @Routes GET : /api/post/feed
+ * @description to get all the post a user
+ * @private
+ */
+postRouter.get("/feed", indentifyUser, getFeedController)
 
 module.exports = postRouter
