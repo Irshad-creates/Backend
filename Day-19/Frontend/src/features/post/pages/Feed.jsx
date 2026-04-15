@@ -1,31 +1,42 @@
 import React, { useEffect } from 'react'
 import "../style/feed.scss"
 import 'remixicon/fonts/remixicon.css'
-import Post from '../components/post'
+import { useNavigate } from 'react-router-dom'
+import Post from '../components/Post'
 import { usePost } from '../hooks/usePost'
 
 
 const Feed = () => {
 
-  const {feed, handleGetFeed, loading} = usePost()
+  const {feed, handleGetFeed, loading, error} = usePost()
+  const navigate = useNavigate()
 
   useEffect(()=>{
-    handleGetFeed()
-  },[])
+    handleGetFeed().catch((error) => {
+      if (error?.response?.status === 401) {
+        navigate("/login")
+      }
+    })
+  },[navigate])
 
-  if(loading || !feed){
+  if(loading){
     return(<main><h1>Feed is Loading...</h1></main>)
   }
 
-  console.log(feed);
-  
+  if(error){
+    return(<main><h1>Unable to load feed right now.</h1></main>)
+  }
+
+  if(!feed?.length){
+    return(<main><h1>No posts in feed yet.</h1></main>)
+  }
 
   return (
     <main className='feed-page'>
         <div className="feed">
             <div className="posts">
                 {feed.map(post=>{
-                  return <Post user={post.user} post={post} />
+                  return <Post key={post._id} user={post.user} post={post} />
                 })}
             </div>
         </div>
