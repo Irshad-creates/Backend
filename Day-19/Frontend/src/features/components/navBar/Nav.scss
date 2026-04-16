@@ -1,0 +1,20 @@
+.nav-bar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-block: 0.5rem;
+
+    .button{
+        color: white;
+        background-color: red;
+        border-radius: 10px;
+        padding: 0.5rem;
+        border: none;
+        cursor: pointer;
+
+        &:hover{
+            transform:scale(0.95);
+        }
+    }
+}

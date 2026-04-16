@@ -4,6 +4,7 @@ import 'remixicon/fonts/remixicon.css'
 import { useNavigate } from 'react-router-dom'
 import Post from '../components/Post'
 import { usePost } from '../hooks/usePost'
+import Nav from '../../components/navBar/Nav'
 
 
 const Feed = () => {
@@ -32,8 +33,10 @@ const Feed = () => {
   }
 
   return (
+    
     <main className='feed-page'>
         <div className="feed">
+          <Nav /> 
             <div className="posts">
                 {feed.map(post=>{
                   return <Post key={post._id} user={post.user} post={post} />
