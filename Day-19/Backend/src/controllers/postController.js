@@ -31,9 +31,13 @@ async function createPostController(req, res){
         user : req.user.id
     })
 
+    const populatedPost = await postModel.findById(post._id).populate("user").lean()
+
+    populatedPost.isLiked = false
+
     res.status(201).json({
         message : "post created succesfully",
-        post
+        post : populatedPost
     })
 }
 
@@ -129,7 +133,7 @@ async function getFeedController(req, res){
     const userId = req.user.id
     const user = req.user
 
-    const post = await Promise.all((await postModel.find({user : userId}).populate("user").lean())
+    const post = await Promise.all((await postModel.find({user : userId}).sort({_id : -1}).populate("user").lean())
     .map(async(post)=>{
 
         const isLiked =await likeModel.findOne({

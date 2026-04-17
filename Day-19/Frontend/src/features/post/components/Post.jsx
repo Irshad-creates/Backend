@@ -5,7 +5,7 @@ const Post = ({user, post}) => {
     <div className="post">
                     <div className="user">
                         <div className="img-wrapper">
-                            <img src={user?.profileImage} alt={user?.username || "Post author"} />
+                            <img src={user?.profileImage} />
                         </div>
                             <p>{user?.username || "Unknown user"}</p>
                     </div>
