@@ -1,5 +1,5 @@
 const express = require('express')
-const { createPostController, getPostController, getPostDetailsController, likePostController, getFeedController } = require('../controllers/postController')
+const { createPostController, getPostController, getPostDetailsController, likePostController, getFeedController, unlikePostController } = require('../controllers/postController')
 const postRouter = express.Router()
 const indentifyUser = require("../middleware/auth.middleware")
 
@@ -27,6 +27,7 @@ postRouter.get("/details/:postId",indentifyUser,getPostDetailsController)
  * 
  */
 postRouter.post("/like/:postid", indentifyUser , likePostController)
+postRouter.post("/unlike/:postid", indentifyUser , unlikePostController)
 
 
 /**
