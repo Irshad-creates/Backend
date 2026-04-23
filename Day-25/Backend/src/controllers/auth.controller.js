@@ -101,6 +101,17 @@ async function getMe(req, res){
 async function logoutUser(req, res){
     const token = req.cookies.userToken
 
+    const isTokenAlreadyBlacklisted = await blacklistModel.findOne({
+        token
+    })
+
+    if(isTokenAlreadyBlacklisted){
+        return res.status(400).json({
+            message:"invaild token"
+        })
+    }
+
+
     res.clearCookie("userToken")
 
     await blacklistModel.create({
