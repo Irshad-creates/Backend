@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import React from 'react'
+import { RouterProvider } from 'react-router'
+import {router} from "./app.routes"
+import "./features/shared/styles/global.scss"
 
-import FaceExpression from './features/Expresssion/components/FaceExpression'
-
-function App() {
-
+const App = () => {
   return (
-    <FaceExpression />
+    <RouterProvider router={router} />
   )
 }
 
