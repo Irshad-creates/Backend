@@ -1,0 +1,12 @@
+1 express
+2 mongoose
+3 jsonwebtoken
+4 bcryptjs
+5 cookie-parser
+6 dotenv
+7 cors
+8 ioredis
+
+9 @imagekit/nodejs
+10 multer 
+11 node-id3
