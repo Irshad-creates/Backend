@@ -2,7 +2,7 @@ import { createContext, useState } from "react";
 
 export const SongContext = createContext(null);
 
-const defaultSong = {
+export const defaultSong = {
   url: "https://ik.imagekit.io/irshadAssets/cohort2/Moodify/songs/Aakhir_Tumhein_Aana_Hai__From__From_Your_Humsafar____DOWNLOAD_MING__RIMrtpz2X",
   posterUrl:
     "https://ik.imagekit.io/irshadAssets/cohort2/Moodify/posters/Aakhir_Tumhein_Aana_Hai__From__From_Your_Humsafar____DOWNLOAD_MING__H34JH1Twi.jpeg",

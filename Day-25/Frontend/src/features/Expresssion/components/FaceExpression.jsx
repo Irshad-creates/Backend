@@ -1,53 +1,29 @@
-
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { initLandmarker, detectExpression } from "../utils/utils";
 
-export default function FaceExpression() {
+export default function FaceExpression({ onClick = () => {} }) {
   const videoRef      = useRef(null);
   const landmarkerRef = useRef(null);
   const streamRef     = useRef(null);
-  const rafRef        = useRef(null);          // requestAnimationFrame handle
   const mountedRef    = useRef(false);
 
   const [expression, setExpression] = useState("");
   const [isReady, setIsReady]       = useState(false);
   const [isStarting, setIsStarting] = useState(false);
+  const [isDetecting, setIsDetecting] = useState(false);
   const [error, setError]           = useState("");
-
-  // ── Continuous detection loop ──────────────────────────────────────────
-  // Runs every animation frame so the expression updates in real-time
-  // instead of requiring a button press each time.
-  const startDetectionLoop = useCallback(() => {
-    const loop = () => {
-      if (!mountedRef.current) return;
-      if (landmarkerRef.current && videoRef.current?.readyState >= 2) {
-        const exp = detectExpression(landmarkerRef.current, videoRef.current);
-        setExpression(exp);
-      }
-      rafRef.current = requestAnimationFrame(loop);
-    };
-    rafRef.current = requestAnimationFrame(loop);
-  }, []);
-
-  const stopDetectionLoop = useCallback(() => {
-    if (rafRef.current) {
-      cancelAnimationFrame(rafRef.current);
-      rafRef.current = null;
-    }
-  }, []);
 
   // ── Cleanup on unmount ─────────────────────────────────────────────────
   useEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
-      stopDetectionLoop();
       landmarkerRef.current?.close();
       landmarkerRef.current = null;
       streamRef.current?.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
     };
-  }, [stopDetectionLoop]);
+  }, []);
 
   // ── Error helpers ──────────────────────────────────────────────────────
   const getCameraErrorMessage = (err) => {
@@ -88,7 +64,6 @@ export default function FaceExpression() {
       await videoRef.current.play();
 
       setIsReady(true);
-      startDetectionLoop();          // ← kick off the live loop
     } catch (err) {
       console.error("Failed to start face expression detection:", err);
       setIsReady(false);
@@ -102,11 +77,20 @@ export default function FaceExpression() {
     }
   };
 
+  // ── Detect on click — samples multiple frames then resolves ────────────
+  const handleClick = async () => {
+    if (!landmarkerRef.current || !videoRef.current || isDetecting) return;
+    setIsDetecting(true);
+    const result = await detectExpression(landmarkerRef.current, videoRef.current);
+    setExpression(result);
+    onClick(result);
+    setIsDetecting(false);
+  };
+
   // ── Stop everything ────────────────────────────────────────────────────
   const handleStop = () => {
-    stopDetectionLoop();
     streamRef.current?.getTracks().forEach((t) => t.stop());
-    streamRef.current          = null;
+    streamRef.current = null;
     if (videoRef.current) videoRef.current.srcObject = null;
     setIsReady(false);
     setExpression("");
@@ -159,33 +143,45 @@ export default function FaceExpression() {
             {isStarting ? "Starting..." : "Start Camera"}
           </button>
         ) : (
-          <button
-            onClick={handleStop}
-            style={{
-              padding: "10px 24px",
-              fontSize: "16px",
-              borderRadius: "8px",
-              border: "none",
-              fontWeight: "600",
-              cursor: "pointer",
-              background: "#e74c3c",
-              color: "white",
-            }}
-          >
-            Stop
-          </button>
+          <>
+            <button
+              onClick={handleClick}
+              disabled={isDetecting}
+              style={{
+                padding: "10px 24px",
+                fontSize: "16px",
+                borderRadius: "8px",
+                border: "none",
+                fontWeight: "600",
+                cursor: isDetecting ? "not-allowed" : "pointer",
+                background: isDetecting ? "#27ae60aa" : "#2ecc71",
+                color: "white",
+              }}
+            >
+              {isDetecting ? "Detecting..." : "Detect Expression"}
+            </button>
+
+            <button
+              onClick={handleStop}
+              style={{
+                padding: "10px 24px",
+                fontSize: "16px",
+                borderRadius: "8px",
+                border: "none",
+                fontWeight: "600",
+                cursor: "pointer",
+                background: "#e74c3c",
+                color: "white",
+              }}
+            >
+              Stop
+            </button>
+          </>
         )}
       </div>
 
       {error && (
-        <p
-          style={{
-            color: "#c0392b",
-            marginTop: "12px",
-            maxWidth: "420px",
-            marginInline: "auto",
-          }}
-        >
+        <p style={{ color: "#c0392b", marginTop: "12px", maxWidth: "420px", marginInline: "auto" }}>
           {error}
         </p>
       )}

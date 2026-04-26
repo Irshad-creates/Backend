@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { SongContext } from "../song.context";
+import { SongContext, defaultSong } from "../song.context";
 
 const SPEED_OPTIONS = [0.75, 1, 1.25, 1.5, 2];
 
@@ -28,6 +28,7 @@ const Player = () => {
     setPlaybackRate,
   } = useContext(SongContext);
   const [volume, setVolume] = useState(0.8);
+  const activeSong = song || defaultSong;
 
   const barStyle = {
     position: "fixed",
@@ -120,7 +121,7 @@ const Player = () => {
           setIsPlaying(false);
         });
     }
-  }, [isPlaying, setCurrentTime, setDuration, setIsPlaying, song.url]);
+  }, [activeSong.url, isPlaying, setCurrentTime, setDuration, setIsPlaying]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -226,7 +227,7 @@ const Player = () => {
     <section style={barStyle}>
       <audio
         ref={audioRef}
-        src={song.url}
+        src={activeSong.url}
         onLoadedMetadata={(event) => {
           syncDuration(event.currentTarget);
         }}
@@ -276,8 +277,8 @@ const Player = () => {
           }}
         >
           <img
-            src={song.posterUrl}
-            alt={song.title}
+            src={activeSong.posterUrl}
+            alt={activeSong.title}
             style={{
               width: "56px",
               height: "56px",
@@ -297,7 +298,7 @@ const Player = () => {
                 textOverflow: "ellipsis",
               }}
             >
-              {song.title}
+              {activeSong.title}
             </p>
             <p
               style={{
@@ -307,7 +308,7 @@ const Player = () => {
                 textTransform: "capitalize",
               }}
             >
-              {song.mood}
+              {activeSong.mood}
             </p>
           </div>
         </div>
