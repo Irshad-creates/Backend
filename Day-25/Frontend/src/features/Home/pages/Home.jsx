@@ -1,19 +1,18 @@
 import React from "react";
-import FaceExpression from "../../Expresssion/components/FaceExpression";
-import Player from "../components/Player";
-import { useSong } from "../Hooks/useSong";
+
+import LeftContainer from "../components/LeftContainer";
+import RightContainer from "../components/RightContainer";
+import "../style/HomePage.scss"
 
 const Home = () => {
 
-  const {handleGetSong} = useSong()
+  
 
   return (
-    <>
-      <FaceExpression 
-      onClick={(expression)=>{handleGetSong({ mood:expression })}}
-      />
-      <Player />
-    </>
+    <main className="mainHome">
+      <LeftContainer className="leftContainer" />
+      <RightContainer className="rightContainer" />
+    </main>
   );
 };
 
