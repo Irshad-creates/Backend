@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getSongs } from "../../Home/services/song.api";
 import { useContext } from "react";
 import { SongContext } from "../../Home/song.context";
-import "../style/Playlist.jsx"
+import "../style/Playlist.scss"
 
 const MOODS = ["happy", "sad", "surprised", "neutral"];
 

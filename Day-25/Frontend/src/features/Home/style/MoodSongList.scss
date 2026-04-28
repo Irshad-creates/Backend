@@ -1,0 +1,125 @@
+.moodSongList {
+  margin-inline: 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 1rem 1.5rem;
+  background-color: #0a0f12;
+  border: 2px solid rgb(22, 38, 22);
+  border-radius: 1rem;
+
+  .moodSongListHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h2 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: capitalize;
+    }
+
+    .songCount {
+      font-size: 12px;
+      color: #1bef07;
+      background: rgba(27, 239, 7, 0.1);
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+  }
+
+  .loadingText {
+    color: #b1b1b1;
+    font-size: 13px;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  // Scrollable horizontal row on desktop, vertical list on smaller screens
+  .songScroll {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    max-height: 260px;
+    overflow-y: auto;
+    padding-right: 4px;
+
+    // Custom scrollbar to match dark theme
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgb(22, 38, 22);
+      border-radius: 999px;
+    }
+
+    .moodSongRow {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+
+      &:hover {
+        background: #0f1a10;
+        border-color: rgba(27, 239, 7, 0.15);
+      }
+
+      &.playing {
+        background: rgba(27, 239, 7, 0.07);
+        border-color: rgba(27, 239, 7, 0.3);
+      }
+
+      .idx {
+        font-size: 12px;
+        color: #555;
+        width: 18px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      .poster {
+        width: 40px;
+        height: 40px;
+        border-radius: 6px;
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+
+      .info {
+        flex: 1;
+        min-width: 0;
+
+        .title {
+          font-size: 13px;
+          font-weight: 500;
+          color: #fff;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+
+          &.active {
+            color: #1bef07;
+          }
+        }
+
+        .mood {
+          font-size: 11px;
+          color: #666;
+          text-transform: capitalize;
+          margin-top: 2px;
+        }
+      }
+    }
+  }
+}
