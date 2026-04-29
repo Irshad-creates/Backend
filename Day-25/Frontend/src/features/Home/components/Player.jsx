@@ -4,50 +4,55 @@ import { SongContext, defaultSong } from "../song.context";
 const SPEED_OPTIONS = [0.75, 1, 1.25, 1.5, 2];
 
 const formatTime = (timeInSeconds) => {
-  if (!Number.isFinite(timeInSeconds)) {
-    return "0:00";
-  }
-
+  if (!Number.isFinite(timeInSeconds)) return "0:00";
   const minutes = Math.floor(timeInSeconds / 60);
   const seconds = Math.floor(timeInSeconds % 60);
-
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
 };
 
+// Simple hook to detect mobile
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth <= 600);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return isMobile;
+}
+
 const Player = () => {
   const audioRef = useRef(null);
+  const isMobile = useIsMobile();
   const {
-    song,
-    isPlaying,
-    setIsPlaying,
-    currentTime,
-    setCurrentTime,
-    duration,
-    setDuration,
-    playbackRate,
-    setPlaybackRate,
+    song, isPlaying, setIsPlaying,
+    currentTime, setCurrentTime,
+    duration, setDuration,
+    playbackRate, setPlaybackRate,
   } = useContext(SongContext);
   const [volume, setVolume] = useState(0.8);
   const activeSong = song || defaultSong;
 
   const barStyle = {
     position: "fixed",
-    left: 0,
-    right: 0,
-    bottom: 0,
+    left: 0, right: 0, bottom: 0,
     zIndex: 1000,
     background: "#111111",
     color: "#ffffff",
-    borderTop: "1px solid rgba(255, 255, 255, 0.12)",
-    boxShadow: "0 -8px 30px rgba(0, 0, 0, 0.25)",
+    borderTop: "1px solid rgba(255,255,255,0.12)",
+    boxShadow: "0 -8px 30px rgba(0,0,0,0.25)",
   };
 
+  // ── On mobile: 2 cols (song info | controls), hide volume/speed
+  // ── On desktop: 3 cols (song info | controls | volume+speed)
   const contentStyle = {
     display: "grid",
-    gridTemplateColumns: "minmax(0, 1.2fr) minmax(0, 1fr) auto",
-    gap: "1rem",
+    gridTemplateColumns: isMobile
+      ? "minmax(0, 1fr) auto"
+      : "minmax(0, 1.2fr) minmax(0, 1fr) auto",
+    gap: isMobile ? "0.5rem" : "1rem",
     alignItems: "center",
-    padding: "0.9rem 1rem 1rem",
+    padding: isMobile ? "0.5rem 0.75rem 0.6rem" : "0.9rem 1rem 1rem",
   };
 
   const buttonStyle = {
@@ -66,374 +71,172 @@ const Player = () => {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    width: "44px",
-    height: "44px",
+    width: isMobile ? "36px" : "44px",
+    height: isMobile ? "36px" : "44px",
     padding: 0,
-    background: "rgba(255, 255, 255, 0.06)",
-    border: "1px solid rgba(255, 255, 255, 0.08)",
+    background: "rgba(255,255,255,0.06)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: "10px",
   };
 
   const primaryButtonStyle = {
     ...iconButtonStyle,
-    width: "56px",
-    height: "56px",
+    width: isMobile ? "44px" : "56px",
+    height: isMobile ? "44px" : "56px",
     borderRadius: "999px",
     background: "linear-gradient(135deg, #4ade80, #22c55e)",
     color: "#08110c",
-    boxShadow: "0 10px 24px rgba(34, 197, 94, 0.35)",
+    boxShadow: "0 10px 24px rgba(34,197,94,0.35)",
   };
 
   useEffect(() => {
-    const audio = audioRef.current;
-
-    if (!audio) {
-      return;
-    }
-
-    audio.playbackRate = playbackRate;
+    if (audioRef.current) audioRef.current.playbackRate = playbackRate;
   }, [playbackRate]);
 
   useEffect(() => {
-    const audio = audioRef.current;
-
-    if (!audio) {
-      return;
-    }
-
-    audio.volume = volume;
+    if (audioRef.current) audioRef.current.volume = volume;
   }, [volume]);
 
   useEffect(() => {
     const audio = audioRef.current;
-
-    if (!audio) {
-      return;
-    }
-
+    if (!audio) return;
     audio.currentTime = 0;
     setCurrentTime(0);
     setDuration(0);
-
-    if (isPlaying) {
-      audio
-        .play()
-        .catch(() => {
-          setIsPlaying(false);
-        });
-    }
+    if (isPlaying) audio.play().catch(() => setIsPlaying(false));
   }, [activeSong.url, isPlaying, setCurrentTime, setDuration, setIsPlaying]);
 
   useEffect(() => {
     const audio = audioRef.current;
-
-    if (!audio) {
-      return;
-    }
-
-    if (isPlaying) {
-      audio
-        .play()
-        .catch(() => {
-          setIsPlaying(false);
-        });
-      return;
-    }
-
+    if (!audio) return;
+    if (isPlaying) { audio.play().catch(() => setIsPlaying(false)); return; }
     audio.pause();
   }, [isPlaying, setIsPlaying]);
 
-  const togglePlayback = () => {
-    setIsPlaying((previous) => !previous);
+  const togglePlayback = () => setIsPlaying((p) => !p);
+  const handleSeek = (e) => {
+    const t = Number(e.target.value);
+    if (audioRef.current) audioRef.current.currentTime = t;
+    setCurrentTime(t);
   };
-
-  const handleSeek = (event) => {
-    const nextTime = Number(event.target.value);
+  const handleSkip = (sec) => {
     const audio = audioRef.current;
-
-    if (!audio) {
-      return;
-    }
-
-    audio.currentTime = nextTime;
-    setCurrentTime(nextTime);
+    if (!audio) return;
+    const t = Math.min(Math.max(audio.currentTime + sec, 0), duration || audio.duration || 0);
+    audio.currentTime = t;
+    setCurrentTime(t);
   };
-
-  const handleSkip = (seconds) => {
-    const audio = audioRef.current;
-
-    if (!audio) {
-      return;
-    }
-
-    const nextTime = Math.min(
-      Math.max(audio.currentTime + seconds, 0),
-      duration || audio.duration || 0
-    );
-
-    audio.currentTime = nextTime;
-    setCurrentTime(nextTime);
-  };
-
-  const handleSpeedChange = (event) => {
-    setPlaybackRate(Number(event.target.value));
-  };
-
-  const handleVolumeChange = (event) => {
-    setVolume(Number(event.target.value));
-  };
-
   const syncDuration = (audio) => {
-    const nextDuration = audio.duration;
-
-    if (Number.isFinite(nextDuration) && nextDuration > 0) {
-      setDuration(nextDuration);
-    }
+    const d = audio.duration;
+    if (Number.isFinite(d) && d > 0) setDuration(d);
   };
 
-  const progressPercentage =
-    duration > 0 ? `${Math.min((currentTime / duration) * 100, 100)}%` : "0%";
+  const progressPercentage = duration > 0
+    ? `${Math.min((currentTime / duration) * 100, 100)}%`
+    : "0%";
 
-  const PlayIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-      <path d="M6 4.75c0-1 1.08-1.63 1.96-1.13l8 4.63c.88.5.88 1.76 0 2.26l-8 4.63A1.3 1.3 0 0 1 6 13.99V4.75Z" />
-    </svg>
-  );
-
-  const PauseIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-      <path d="M5.5 4.5A1.5 1.5 0 0 1 7 6v8a1.5 1.5 0 0 1-3 0V6a1.5 1.5 0 0 1 1.5-1.5Zm7 0A1.5 1.5 0 0 1 14 6v8a1.5 1.5 0 0 1-3 0V6a1.5 1.5 0 0 1 1.5-1.5Z" />
-    </svg>
-  );
-
-  const BackwardIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-      <path d="M9.7 10 16 5.63v8.74L9.7 10Zm-6.2 0 6.3-4.37v8.74L3.5 10Zm-.5-4.75h1.5v9.5H3V5.25Z" />
-    </svg>
-  );
-
-  const ForwardIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-      <path d="M10.3 10 4 14.37V5.63L10.3 10Zm6.2 0-6.3 4.37V5.63L16.5 10Zm.5 4.75h-1.5v-9.5H17v9.5Z" />
-    </svg>
-  );
-
-  const VolumeIcon = () => (
-    <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-      <path d="M9.14 4.28a1 1 0 0 1 1.72.69v10.06a1 1 0 0 1-1.72.69L5.9 12.5H3.5A1.5 1.5 0 0 1 2 11V9a1.5 1.5 0 0 1 1.5-1.5h2.4l3.24-3.22ZM13.6 7.02a.75.75 0 0 1 1.06.06 4.5 4.5 0 0 1 0 5.84.75.75 0 1 1-1.12-.99 3 3 0 0 0 0-3.86.75.75 0 0 1 .06-1.05Zm2.52-2.28a.75.75 0 0 1 1.06.06 8 8 0 0 1 0 10.4.75.75 0 1 1-1.12-.99 6.5 6.5 0 0 0 0-8.42.75.75 0 0 1 .06-1.05Z" />
-    </svg>
-  );
+  const PlayIcon  = () => <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path d="M6 4.75c0-1 1.08-1.63 1.96-1.13l8 4.63c.88.5.88 1.76 0 2.26l-8 4.63A1.3 1.3 0 0 1 6 13.99V4.75Z"/></svg>;
+  const PauseIcon = () => <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path d="M5.5 4.5A1.5 1.5 0 0 1 7 6v8a1.5 1.5 0 0 1-3 0V6a1.5 1.5 0 0 1 1.5-1.5Zm7 0A1.5 1.5 0 0 1 14 6v8a1.5 1.5 0 0 1-3 0V6a1.5 1.5 0 0 1 1.5-1.5Z"/></svg>;
+  const BackwardIcon = () => <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path d="M9.7 10 16 5.63v8.74L9.7 10Zm-6.2 0 6.3-4.37v8.74L3.5 10Zm-.5-4.75h1.5v9.5H3V5.25Z"/></svg>;
+  const ForwardIcon  = () => <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path d="M10.3 10 4 14.37V5.63L10.3 10Zm6.2 0-6.3 4.37V5.63L16.5 10Zm.5 4.75h-1.5v-9.5H17v9.5Z"/></svg>;
+  const VolumeIcon   = () => <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path d="M9.14 4.28a1 1 0 0 1 1.72.69v10.06a1 1 0 0 1-1.72.69L5.9 12.5H3.5A1.5 1.5 0 0 1 2 11V9a1.5 1.5 0 0 1 1.5-1.5h2.4l3.24-3.22ZM13.6 7.02a.75.75 0 0 1 1.06.06 4.5 4.5 0 0 1 0 5.84.75.75 0 1 1-1.12-.99 3 3 0 0 0 0-3.86.75.75 0 0 1 .06-1.05Zm2.52-2.28a.75.75 0 0 1 1.06.06 8 8 0 0 1 0 10.4.75.75 0 1 1-1.12-.99 6.5 6.5 0 0 0 0-8.42.75.75 0 0 1 .06-1.05Z"/></svg>;
 
   return (
     <section style={barStyle}>
       <audio
         ref={audioRef}
         src={activeSong.url}
-        onLoadedMetadata={(event) => {
-          syncDuration(event.currentTarget);
-        }}
-        onLoadedData={(event) => {
-          syncDuration(event.currentTarget);
-        }}
-        onDurationChange={(event) => {
-          syncDuration(event.currentTarget);
-        }}
-        onTimeUpdate={(event) => {
-          syncDuration(event.currentTarget);
-          setCurrentTime(event.currentTarget.currentTime);
-        }}
-        onEnded={() => {
-          setIsPlaying(false);
-          setCurrentTime(0);
-        }}
+        onLoadedMetadata={(e) => syncDuration(e.currentTarget)}
+        onLoadedData={(e) => syncDuration(e.currentTarget)}
+        onDurationChange={(e) => syncDuration(e.currentTarget)}
+        onTimeUpdate={(e) => { syncDuration(e.currentTarget); setCurrentTime(e.currentTarget.currentTime); }}
+        onEnded={() => { setIsPlaying(false); setCurrentTime(0); }}
       />
 
+      {/* Progress bar */}
       <div style={{ padding: "0.5rem 1rem 0" }}>
         <input
-          type="range"
-          min="0"
-          max={duration || 0}
-          step="0.1"
+          type="range" min="0" max={duration || 0} step="0.1"
           value={Math.min(currentTime, duration || 0)}
           onChange={handleSeek}
           style={{
-            width: "100%",
-            accentColor: "#4ade80",
-            cursor: "pointer",
-            margin: 0,
-            height: "6px",
-            borderRadius: "999px",
-            background: `linear-gradient(to right, #4ade80 0%, #4ade80 ${progressPercentage}, rgba(255, 255, 255, 0.16) ${progressPercentage}, rgba(255, 255, 255, 0.16) 100%)`,
+            width: "100%", accentColor: "#4ade80", cursor: "pointer",
+            margin: 0, height: "6px", borderRadius: "999px",
+            background: `linear-gradient(to right, #4ade80 0%, #4ade80 ${progressPercentage}, rgba(255,255,255,0.16) ${progressPercentage}, rgba(255,255,255,0.16) 100%)`,
           }}
         />
       </div>
 
       <div style={contentStyle}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.85rem",
-            minWidth: 0,
-          }}
-        >
+
+        {/* Song info */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", minWidth: 0 }}>
           <img
-            src={activeSong.posterUrl}
-            alt={activeSong.title}
-            style={{
-              width: "56px",
-              height: "56px",
-              objectFit: "cover",
-              borderRadius: "10px",
-              flexShrink: 0,
-            }}
+            src={activeSong.posterUrl} alt={activeSong.title}
+            style={{ width: isMobile ? "40px" : "56px", height: isMobile ? "40px" : "56px",
+              objectFit: "cover", borderRadius: "10px", flexShrink: 0 }}
           />
           <div style={{ minWidth: 0 }}>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "0.95rem",
-                fontWeight: 600,
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
+            <p style={{ margin: 0, fontSize: isMobile ? "0.8rem" : "0.95rem", fontWeight: 600,
+              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
               {activeSong.title}
             </p>
-            <p
-              style={{
-                margin: "0.25rem 0 0",
-                fontSize: "0.8rem",
-                color: "rgba(255, 255, 255, 0.7)",
-                textTransform: "capitalize",
-              }}
-            >
+            <p style={{ margin: "0.2rem 0 0", fontSize: "0.75rem",
+              color: "rgba(255,255,255,0.7)", textTransform: "capitalize" }}>
               {activeSong.mood}
             </p>
           </div>
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.75rem",
-            justifyContent: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <button
-            type="button"
-            onClick={() => handleSkip(-5)}
-            style={iconButtonStyle}
-            aria-label="Go backward 5 seconds"
-            title="Back 5 seconds"
-          >
+        {/* Controls */}
+        <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "0.4rem" : "0.75rem",
+          justifyContent: "center" }}>
+          <button type="button" onClick={() => handleSkip(-5)} style={iconButtonStyle} aria-label="Back 5s">
             <BackwardIcon />
           </button>
-
-          <button
-            type="button"
-            onClick={togglePlayback}
-            style={primaryButtonStyle}
-            aria-label={isPlaying ? "Pause song" : "Play song"}
-            title={isPlaying ? "Pause" : "Play"}
-          >
+          <button type="button" onClick={togglePlayback} style={primaryButtonStyle}
+            aria-label={isPlaying ? "Pause" : "Play"}>
             {isPlaying ? <PauseIcon /> : <PlayIcon />}
           </button>
-
-          <button
-            type="button"
-            onClick={() => handleSkip(5)}
-            style={iconButtonStyle}
-            aria-label="Go forward 5 seconds"
-            title="Forward 5 seconds"
-          >
+          <button type="button" onClick={() => handleSkip(5)} style={iconButtonStyle} aria-label="Forward 5s">
             <ForwardIcon />
           </button>
+
+          {/* Show time inline on mobile since we hide the right column */}
+          {isMobile && (
+            <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap" }}>
+              {formatTime(currentTime)} / {formatTime(duration)}
+            </span>
+          )}
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-            gap: "0.75rem",
-            justifySelf: "end",
-            fontSize: "0.85rem",
-            color: "rgba(255, 255, 255, 0.75)",
-            whiteSpace: "nowrap",
-          }}
-        >
-          <span>
-            {formatTime(currentTime)} / {formatTime(duration)}
-          </span>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.55rem",
-              padding: "0.45rem 0.7rem",
-              borderRadius: "999px",
-              background: "rgba(255, 255, 255, 0.05)",
-              border: "1px solid rgba(255, 255, 255, 0.08)",
-            }}
-          >
-            <span
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                color: "rgba(255, 255, 255, 0.8)",
-              }}
-            >
-              <VolumeIcon />
-            </span>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={volume}
-                onChange={handleVolumeChange}
-                aria-label="Volume"
-                style={{
-                  width: "78px",
-                  accentColor: "#4ade80",
-                  cursor: "pointer",
-                  height: "4px",
-                  borderRadius: "999px",
-                  background: `linear-gradient(to right, #4ade80 0%, #4ade80 ${volume * 100}%, rgba(255, 255, 255, 0.16) ${volume * 100}%, rgba(255, 255, 255, 0.16) 100%)`,
-                }}
+        {/* Volume + speed — hidden on mobile */}
+        {!isMobile && (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end",
+            gap: "0.75rem", justifySelf: "end", fontSize: "0.85rem",
+            color: "rgba(255,255,255,0.75)", whiteSpace: "nowrap" }}>
+            <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.55rem",
+              padding: "0.45rem 0.7rem", borderRadius: "999px",
+              background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <span style={{ display: "inline-flex", alignItems: "center" }}><VolumeIcon /></span>
+              <input type="range" min="0" max="1" step="0.01" value={volume}
+                onChange={(e) => setVolume(Number(e.target.value))} aria-label="Volume"
+                style={{ width: "78px", accentColor: "#4ade80", cursor: "pointer",
+                  height: "4px", borderRadius: "999px",
+                  background: `linear-gradient(to right, #4ade80 0%, #4ade80 ${volume * 100}%, rgba(255,255,255,0.16) ${volume * 100}%, rgba(255,255,255,0.16) 100%)` }}
               />
             </div>
+            <select value={playbackRate} onChange={(e) => setPlaybackRate(Number(e.target.value))}
+              style={{ borderRadius: "999px", border: "1px solid rgba(255,255,255,0.14)",
+                background: "#0a0a0a", color: "#6dc568", padding: "0.5rem 0.8rem",
+                outline: "none", fontSize: "0.85rem" }} aria-label="Playback speed">
+              {SPEED_OPTIONS.map((s) => (
+                <option key={s} value={s} style={{ color: "#6dc568" }}>x{s}</option>
+              ))}
+            </select>
           </div>
-          <select
-            value={playbackRate}
-            onChange={handleSpeedChange}
-            style={{
-              borderRadius: "999px",
-              border: "1px solid rgba(255, 255, 255, 0.14)",
-              background: "#0a0a0a",
-              color: "#6dc568",
-              padding: "0.5rem 0.8rem",
-              outline: "none",
-              fontSize: "0.85rem",
-            }}
-            aria-label="Playback speed"
-          >
-            {SPEED_OPTIONS.map((speed) => (
-              <option key={speed} value={speed} style={{ color: "#6dc568" }}>
-                x{speed}
-              </option>
-            ))}
-          </select>
-        </div>
+        )}
       </div>
     </section>
   );

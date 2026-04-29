@@ -9,8 +9,9 @@ import MoodSongList from './MoodSongList';
 
 const HomeMainContainer = ({className}) => {
 
-    const {handleGetSong} = useSong()
-    const { song } = useContext(SongContext);
+    const {handleGetSong, handleChangeMusic} = useSong()
+    const { song, moodSongs, loading } = useContext(SongContext);
+    const canChangeMusic = !loading && moodSongs?.length > 0;
 
   return (
     <div className={className}>
@@ -31,7 +32,14 @@ const HomeMainContainer = ({className}) => {
                         <span>Detected Mood : {song.mood}</span>
                     </div>
                 )}
-                <button className='changeMusic'>Change music</button>
+                <button
+                    className='changeMusic'
+                    type="button"
+                    onClick={handleChangeMusic}
+                    disabled={!canChangeMusic}
+                >
+                    Change music
+                </button>
             </div>
         </div>
         <MoodSongList />

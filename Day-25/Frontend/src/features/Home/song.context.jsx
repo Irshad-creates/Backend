@@ -12,6 +12,7 @@ export const defaultSong = {
 
 export const SongContextProvider = ({ children }) => {
   const [song, setSong] = useState(defaultSong);
+  const [moodSongs, setMoodSongs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -25,6 +26,8 @@ export const SongContextProvider = ({ children }) => {
         setLoading,
         song,
         setSong,
+        moodSongs,
+        setMoodSongs,
         isPlaying,
         setIsPlaying,
         currentTime,

@@ -325,9 +325,147 @@
                     &:active{
                         transform: scale(0.95);
                     }
+
+                    &:disabled{
+                        background-color: #6b7280;
+                        cursor: not-allowed;
+                        opacity: 0.7;
+                    }
                 }
             }
 
         }
     }   
+}
+
+
+@media (max-width: 600px) {
+  .mainHome {
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: 100dvh;
+
+    // ── Sidebar becomes a top header ───────────────────────────
+    .leftContainer {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      max-width: 100% !important;
+      width: 100% !important;
+      height: auto !important;
+      border-right: none !important;
+      border-bottom: 2px solid rgb(22, 38, 22);
+      padding: 0.6rem 1rem 0.5rem !important;
+      overflow: visible;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      order: 1;
+      z-index: 1001;
+      background-color: #0a0f12 !important;
+
+      // Logo + name row stays visible
+      .leftUpper {
+        display: block !important;
+        width: 100%;
+        margin-bottom: 0.6rem;
+        padding: 0 !important;
+        align-items: flex-start;
+        justify-content: flex-start;
+        font-size: 16px !important;
+
+        // Hide tagline "Feel it. Detect it. Play it"
+        p { display: none !important; }
+
+        .leftUpperFirst {
+          display: flex !important;
+          align-items: center;
+          justify-content: flex-start;
+          gap: 0.5rem;
+          width: 100%;
+          h1 {
+            margin: 0;
+          }
+          img { height: 2.2rem !important; }
+        }
+      }
+
+      // Nav links go horizontal below logo row
+      .leftBottom {
+        display: flex;
+        flex-direction: row !important;
+        justify-content: center;
+        gap: 0.3rem !important;
+        margin-top: 0.6rem;
+        overflow-x: auto;
+        padding-bottom: 0.2rem;
+
+        // Hide scrollbar on mobile
+        &::-webkit-scrollbar { display: none; }
+        scrollbar-width: none;
+
+        a {
+          flex: 1;
+          text-align: center;
+          font-size: 12px !important;
+          padding: 0.5rem 0.4rem !important;
+          border-radius: 0.5rem !important;
+          white-space: nowrap;
+          background-color: rgba(83, 81, 81, 0.177) !important;
+        }
+      }
+    }
+
+    // ── Right container fills rest of screen ───────────────────
+    .rightContainer {
+      width: 100% !important;
+      flex: 1;
+      order: 2;
+      overflow-y: auto;
+      padding-top: 116px !important;
+      padding-bottom: 96px !important; // smaller clearance above the fixed player
+
+      .navbar {
+        margin-inline: 0.4rem !important;
+        margin-top: 0 !important;
+        margin-bottom: 0.4rem !important;
+        padding-inline: 0.75rem !important;
+        padding-block: 0.6rem !important;
+        border-radius: 0.75rem !important;
+
+        .NavLeft {
+          h1 { font-size: 1rem !important; }
+          p  { font-size: 11px !important; }
+        }
+
+        .navRight {
+          gap: 0.5rem !important;
+          padding-right: 0 !important;
+          .liveBtn { display: none !important; }
+        }
+      }
+
+      .HomeMainContainer {
+        min-height: unset !important;
+
+        .camera-song {
+          flex-direction: column !important;
+        }
+
+        .face-camera,
+        .current-song {
+          margin-inline: 0.4rem !important;
+          margin-block: 0.3rem !important;
+          padding-inline: 1rem !important;
+          padding-block: 0.75rem !important;
+          border-radius: 0.75rem !important;
+        }
+
+        .current-song .song-card img {
+          max-height: 150px !important;
+        }
+      }
+    }
+  }
 }

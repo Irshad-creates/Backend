@@ -37,7 +37,7 @@ const Profile = ({ className }) => {
                         <p>{user?.email || ""}</p>
                     </div>
                     <div className="menuItem">My Playlist</div>
-                    <div className="menuItem">My Vibe</div>
+                    <div className="menuItem" >My Vibe</div>
                     <div className="menuItem logout" onClick={onLogout}>Logout</div>
                 </div>
             )}
