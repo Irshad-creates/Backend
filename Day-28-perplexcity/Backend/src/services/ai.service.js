@@ -1,5 +1,6 @@
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-import { HumanMessage } from "langchain"
+import { HumanMessage,createAgent } from "langchain"
+import * as z from "zod"
 import readline from "readline/promises"
 import dotenv from "dotenv";
 import path from "path";
@@ -24,10 +25,6 @@ const model = new ChatGoogleGenerativeAI({
   apiKey: process.env.GEMINI_API_KEY
 });
 
-// export async function testAi (){
-//   model.invoke("what is your name?")
-//   .then((response)=>{console.log(response.text)})
-// }
 
 const message = []
 const AI_NAME = "PerplexCity AI";
