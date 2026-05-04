@@ -1,6 +1,8 @@
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-import { HumanMessage,createAgent } from "langchain"
+import { HumanMessage,createAgent,tool } from "langchain"
 import * as z from "zod"
+import { sendEmail } from "./mail.service.js";
+
 import readline from "readline/promises"
 import dotenv from "dotenv";
 import path from "path";
@@ -19,14 +21,32 @@ const rl = readline.createInterface({
   output :process.stdout
 })
 
+const EmailTool = tool(
+  sendEmail,
+  {
+    name : "emailTool",
+    description :"use this tool to send email",
+    schema: z.object({
+      to : z.string().describe("The recipient's email address"),
+      html : z.string().describe("the HTML content of the email"),
+      subject : z.string().describe("The subject of email"),
+      text : z.string().describe("the plain text content of the email")
+    })
+  }
+)
+
 
 const model = new ChatGoogleGenerativeAI({
   model: "gemini-2.5-flash-lite",
   apiKey: process.env.GEMINI_API_KEY
 });
 
+const agent =  createAgent({
+  model ,
+  tools : [ EmailTool]
+})
 
-const message = []
+let messages = []
 const AI_NAME = "PerplexCity AI";
 
 const colors = {
@@ -41,11 +61,12 @@ while (true){
     `${colors.cyan}You:${colors.reset} `
   )
 
-  message.push(new HumanMessage(userInput))
+  messages.push(new HumanMessage(userInput))
 
-  const response = await model.invoke(message)
+  const result = await agent.invoke({ messages })
+  messages = result.messages
 
-  message.push(response)
+  const response = messages[messages.length - 1]
 
   console.log(
     `${colors.green}${AI_NAME}:${colors.reset} ${colors.yellow}${response.text}${colors.reset}`
