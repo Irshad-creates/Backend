@@ -34,6 +34,8 @@ export async function sendEmail({to, subject, html, text=""}) {
         text
     }
 
+    
+
     try {
         await transporter.sendMail(mailOptions); 
         return "Email sent succesfully to " + to;
