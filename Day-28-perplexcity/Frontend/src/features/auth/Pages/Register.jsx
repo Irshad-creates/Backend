@@ -7,12 +7,12 @@ const Register = () => {
     const [username, setUsername] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-
+    const [loading, setLoading] = useState(false)
 
     async function handleSubmit(e){
         e.preventDefault()
 
-        navigate("/")
+        navigate("/login")
     }
 
 

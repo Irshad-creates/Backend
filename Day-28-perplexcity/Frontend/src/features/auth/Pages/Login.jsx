@@ -8,12 +8,13 @@ const Login = () => {
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [loading, setLoading] = useState(false)
 
     const {handleLogin} = useAuth()
 
     async function handleSubmit(e){
         e.preventDefault()
-        handleLogin({email, password})
+        await handleLogin({email, password})
         navigate("/")
     }
 
