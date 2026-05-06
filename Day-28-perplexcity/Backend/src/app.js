@@ -1,8 +1,13 @@
+// import morgan from "morgan"
+// app.use(morgan("dev"))
+
 import  express  from "express"
 import cookieParser from "cookie-parser"
-import authRouter from "./Routes/auth.routes.js"
 import cors from "cors"
-// import morgan from "morgan"
+
+import authRouter from "./Routes/auth.routes.js"
+import chatRouter from "./routes/chat.routes.js"
+
 const app = express()
 app.use(cookieParser())
 app.use(express.json())
@@ -11,10 +16,9 @@ app.use(cors({
     credentials:true,
     methods: ["GET","POST","PUT","DELETE"]
 }))
-// app.use(morgan("dev"))
 /**
  * routes
  */
 app.use("/api/auth", authRouter)
-
+app.use("/api/chats", chatRouter)
 export default app
