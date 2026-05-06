@@ -1,11 +1,15 @@
 import React, { useState } from 'react'
 import { Link,  useNavigate } from 'react-router'
 import { useAuth } from '../Hooks/useAuth'
-
+import { useSelector } from 'react-redux'
+import { Navigate } from 'react-router'
 const Login = () => {
 
     const navigate = useNavigate()
 
+    const user = useSelector(state => state.auth.user )
+    const Loading = useSelector(state => state.auth.loading )
+    
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
@@ -14,10 +18,15 @@ const Login = () => {
 
     async function handleSubmit(e){
         e.preventDefault()
-        await handleLogin({email, password})
-        navigate("/")
+        const data = await handleLogin({email, password})
+        if(data?.user){
+            navigate("/")
+        }
     }
 
+    if(!Loading && user){
+        return <Navigate to="/" replace />
+    }
 
   return (
     <section className='bg-zinc-950 min-h-screen text-zinc-100 px-4 py-10'>
