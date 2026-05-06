@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router"
+import { createBrowserRouter, Navigate } from "react-router"
 import Login from "../features/auth/Pages/Login"
 import Register from "../features/auth/Pages/Register"
 import Protected from "../features/auth/components/Protected"
@@ -10,6 +10,10 @@ export const router = createBrowserRouter([
     element: <Protected >
                 <Dashboard />
             </Protected>
+  },
+  {
+    path: "/dashboard",
+    element: <Navigate to="/" replace/>
   },
   {
     path: "/login",
