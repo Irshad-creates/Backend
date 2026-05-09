@@ -18,6 +18,8 @@ export const useAuth = () => {
         }
     }
 
+    
+
     async function handleLogin({ username, email, password }) {
         setLoading(true)
         try {
@@ -29,6 +31,9 @@ export const useAuth = () => {
             setLoading(false)
         }
     }
+
+
+
 
     async function handleLogout() {
         setLoading(true)
