@@ -6,6 +6,7 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, { /* options */ });
 
 io.on("connection", (socket) => {
+    
     console.log('new connection created');
 
     socket.on("message", (msg)=>{
@@ -16,5 +17,6 @@ io.on("connection", (socket) => {
 })
 
 httpServer.listen(3000,()=>{
+
     console.log('server running on port 3000');
 });
