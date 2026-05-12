@@ -1,0 +1,8 @@
+{
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "tailwindCSS.experimental.configFile": {
+    "Frontend/src/app/index.css": "Frontend/src/**"
+  }
+}
