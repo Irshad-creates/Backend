@@ -1,4 +1,4 @@
-import { createSlice, current } from "@reduxjs/toolkit"
+import { createSlice } from "@reduxjs/toolkit"
 
 const chatSlice = createSlice({
     name: 'chat',
@@ -9,32 +9,38 @@ const chatSlice = createSlice({
         error : null
     },
     reducers: {
-        createNewChat : (State, action)=>{
+        createNewChat: (state, action) => {
             const { chatId, title } = action.payload
             state.chats[ chatId ] = {
-                id : chatId,
+                id: chatId,
                 title,
-                message : [],
-                lastUpdated : new date().toISOString()
+                messages :[],
+                lastUpdated: new Date().toISOString(),
             }
         },
         addNewMessage : (state, action)=>{
             const {chatId, content, role} = action.payload
-            state.chats[ chatId ].message.push({ content, role })  
+            state.chats[ chatId ].messages.push({ content, role })  
             
         },
-        addMessages : (state, action)=>{
-            const {chatId,messages} = action.payload
+        addMessages: (state, action) => {
+            const { chatId, messages } = action.payload
+
+            console.log(messages);
+            console.log(chatId)
+            console.log(state.chats)
+            console.log(state.chats[chatId])
+            console.log(state.chats[chatId].messages)   
+                        
 
             state.chats[chatId].messages.push(...messages)
 
-        }
-        ,
-            setChats : (state, action)=>{
+        },
+        setChats : (state, action)=>{
             state.chats = action.payload
         },
         setCurrentChatId :(state, action)=>{
-            state.CurrentChatId = action.payload
+            state.currentChatId = action.payload
         },
         setLoading : (state, action)=>{
             state.isLoading = action.payload

@@ -12,7 +12,7 @@ export const useChat = ()=>{
     async function handleSendMessage ({ message, chatId }){
         dispatch(setLoading(true))
         const data =await sendMessage( { message, chatId } )    
-        const { chats, aiMessage } = data
+        const { chat, aiMessage } = data
         dispatch(createNewChat({
             chatId : chat._id,
             title : chat.title,
@@ -39,7 +39,7 @@ export const useChat = ()=>{
             acc[ chat._id]={
                 id :chat._id,
                 title : chat.title,
-                message : [],
+                messages : [],
                 lastUpdated: chat.updatedAt,
             }
             return acc
