@@ -1,45 +1,76 @@
 import React, { useEffect, useState } from 'react'
-import ReactMarkdown from 'react-markdown'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useChat } from '../hooks/useChat'
-import remarkGfm from 'remark-gfm'
-import { NavLink } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom"
+import { setCurrentChatId } from '../chat.slice'
 
 const Dashboard = () => {
   const chat = useChat()
-  const [ chatInput, setChatInput ] = useState('')
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const [searchInput, setSearchInput] = useState('')
   const chats = useSelector((state) => state.chat.chats)
-  const currentChatId = useSelector((state) => state.chat.currentChatId)
 
   useEffect(() => {
-    // chat.initializeSocketConnection()
     chat.handleGetChats()
   }, [])
-  
-  const handleSubmitMessage = (event) => {
-    event.preventDefault()
 
-    const trimmedMessage = chatInput.trim()
+  const handleSearchSubmit = (event) => {
+    event.preventDefault()
+    const trimmedMessage = searchInput.trim()
     if (!trimmedMessage) {
       return
     }
+    handleStartChat(trimmedMessage)
+  }
 
-    chat.handleSendMessage({ message: trimmedMessage, chatId: currentChatId })
-    setChatInput('')
+  const handleStartChat = (message) => {
+    chat.handleSendMessage({ message, chatId: null })
+    navigate('/chats/new')
+    setSearchInput('')
+  }
+
+  const handleSuggestionClick = (suggestion) => {
+    handleStartChat(suggestion)
   }
 
   const openChat = (chatId) => {
-    chat.handleOpenChat(chatId,chats)
+    chat.handleOpenChat(chatId, chats)
+    navigate('/chats/new')
   }
 
+  const suggestedQuestions = [
+    "Summarize this: TechCrunch | Startup and Technology News",
+    "Tell me more about The Latest News in Technology ...",
+    "What are the top 5 programming news today?",
+    "Explain the latest tech market shifts"
+  ]
+
+  const newsResults = [
+    {
+      title: "TechCrunch | Startup and Technology News",
+      source: "NEWS · TECHCRUNCH.COM"
+    },
+    {
+      title: "The Latest News in Technology | PCMag",
+      source: "NEWS · PCMAG.COM"
+    },
+    {
+      title: "Technology - The New York Times",
+      source: "NEWS · NYTIMES.COM"
+    },
+    {
+      title: "Tech | CNN Business",
+      source: "NEWS · CNN.COM"
+    }
+  ]
+
   return (
-    <main className='min-h-screen w-full bg-black  text-white '>
-      <section className='mx-auto  flex h-[calc(100vh-1.5rem)] w-full gap-4 rounded-3xl border    md:gap-6  border-none'>
-        <aside className='relative hidden h-full w-60 shrink-0  border-r border-zinc-700 p-4 md:flex md:flex-col'>
-          
-
+    <main className='min-h-screen w-full bg-black text-white'>
+      <section className='mx-auto flex h-[calc(100vh-1.5rem)] w-full rounded-3xl border-none'>
+        {/* Sidebar */}
+        <aside className='relative hidden h-full w-60 shrink-0 border-r border-zinc-700 p-4 md:flex md:flex-col'>
           <nav className='space-y-1 mb-4'>
-
             <NavLink to='/' className={({ isActive }) => `w-full flex items-center gap-3 pl-2 py-2 rounded-lg transition-all duration-200
               ${
                 isActive
@@ -81,10 +112,9 @@ const Dashboard = () => {
             </svg>
             <span className='text-sm font-medium'>Email</span>
             </NavLink>
-
           </nav>
 
-          <NavLink to="/chat" className={({ isActive }) => `w-full flex items-center gap-3 pl-2 py-2 mb-4 rounded-lg transition-all duration-200
+          <NavLink to="/chats/new" className={({ isActive }) => `w-full flex items-center gap-3 pl-2 py-2 mb-4 rounded-lg transition-all duration-200
               ${
                 isActive
                   ? "bg-zinc-100 text-black dark:bg-zinc-800 dark:text-white"
@@ -99,19 +129,18 @@ const Dashboard = () => {
           <div className="">
             <h1 className='text-zinc-500 font-bold text-sm mb-3'>RECENT</h1>
             <div className='space-y-2 max-h-50 pr-2 overflow-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-[#000000] '>
-              {Object.values(chats).map((chat,index) => (
+              {Object.values(chats).map((chatItem, index) => (
                 <button
-                  onClick={() => { openChat(chat.id) }}
+                  onClick={() => { openChat(chatItem.id) }}
                   key={index}
                   type='button'
                   className='w-full flex items-center cursor-pointer rounded-xl hover:bg-zinc-900 px-2 py-1 text-left text-sm whitespace-nowrap overflow-hidden text-ellipsis font-medium text-white/90 transition hover:border-white hover:text-white'
                 >
-                  {chat.title}
+                  {chatItem.title}
               </button>
               ))}
             </div>
           </div>
-
 
           <div className='absolute bottom-1  h-12 w-50 rounded-lg bg:bg-zinc-800 hover:bg-zinc-900 flex items-center justify-between px-2 ' >
               <div className='h-2 flex items-center gap-2'>
@@ -125,60 +154,101 @@ const Dashboard = () => {
                 <svg className='h-6 p-1 cursor-pointer hover:text-red-400' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M5 22C4.44772 22 4 21.5523 4 21V3C4 2.44772 4.44772 2 5 2H19C19.5523 2 20 2.44772 20 3V6H18V4H6V20H18V18H20V21C20 21.5523 19.5523 22 19 22H5ZM18 16V13H11V11H18V8L23 12L18 16Z"></path></svg>
               </div>
           </div>
-
         </aside>
 
-        <section className='relative  w-full mx-auto overflow-hidden   h-screen min-w-0 flex flex-1 flex-col items-center gap-4 '>
-
-          
-
-          <div className='messages flex-1 space-y-3 overflow-y-auto pr-1 pb-30'>
-            {chats[ currentChatId ]?.messages.map((message) => (
-              <div
-                key={message.id}
-                className={`max-w-[82%] w-fit rounded-2xl px-4 py-3 text-sm md:text-base ${message.role === 'user'
-                    ? 'ml-auto rounded-br-none bg-white/12 text-white'
-                    : 'mr-auto border-none text-white/90'
-                  }`}
-              >
-                {message.role === 'user' ? (
-                  <p>{message.content}</p>
-                ) : (
-                  <ReactMarkdown
-                    components={{
-                      p: ({ children }) => <p className='mb-2 last:mb-0'>{children}</p>,
-                      ul: ({ children }) => <ul className='mb-2 list-disc pl-5'>{children}</ul>,
-                      ol: ({ children }) => <ol className='mb-2 list-decimal pl-5'>{children}</ol>,
-                      code: ({ children }) => <code className='rounded bg-white/10 px-1 py-0.5'>{children}</code>,
-                      pre: ({ children }) => <pre className='mb-2 overflow-x-auto rounded-xl bg-black/30 p-3'>{children}</pre>
-                    }}
-                    remarkPlugins={[remarkGfm]}
-                  >
-                    {message.content}
-                  </ReactMarkdown>
-                )}
+        {/* Home Content Section */}
+        <section className='w-full min-w-0 flex flex-1 overflow-hidden'>
+          <div className='mx-auto flex h-full w-full flex-col px-4 py-4 overflow-y-auto'>
+            {/* Perplexity Logo and Title */}
+            <div className='flex flex-col items-center justify-center py-8'>
+              <h1 className='text-5xl font-bold mb-8'>Perplexity</h1>
+              
+              {/* Categories */}
+              <div className='flex gap-3 mb-8 flex-wrap justify-center'>
+                <button onClick={() => handleSuggestionClick('Trending Tech')} className='px-4 py-2 rounded-full border border-white/30 hover:border-white/60 text-sm transition'>Trending Tech</button>
+                <button onClick={() => handleSuggestionClick('Startups')} className='px-4 py-2 rounded-full border border-white/30 hover:border-white/60 text-sm transition'>Startups</button>
+                <button onClick={() => handleSuggestionClick('AI Tools')} className='px-4 py-2 rounded-full border border-white/30 hover:border-white/60 text-sm transition'>AI Tools</button>
+                <button onClick={() => handleSuggestionClick('Gadgets')} className='px-4 py-2 rounded-full border border-white/30 hover:border-white/60 text-sm transition'>Gadgets</button>
               </div>
-            ))}
-          </div>
 
-          <footer className='rounded-3xl w-full absolute bottom-2 border border-white/60 bg-[#080b12] p-4 '>
-            <form onSubmit={handleSubmitMessage} className='flex flex-col gap-3 md:flex-row'>
-              <input
-                type='text'
-                value={chatInput}
-                onChange={(event) => setChatInput(event.target.value)}
-                placeholder='Type your message...'
-                className='w-full rounded-2xl border border-white/50 bg-transparent px-4 py-3 text-lg text-white outline-none transition placeholder:text-white/45 focus:border-white/90'
-              />
-              <button
-                type='submit'
-                disabled={!chatInput.trim()}
-                className='rounded-2xl border border-white/60 px-6 py-3 text-lg font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50'
-              >
-                Send
-              </button>
-            </form>
-          </footer>
+              {/* Search Input */}
+              <form onSubmit={handleSearchSubmit} className='w-full max-w-2xl mb-8'>
+                <div className='rounded-3xl border border-white/60 bg-[#080b12] p-4'>
+                  <div className='flex flex-row gap-3'>
+                    <input
+                      type='text'
+                      value={searchInput}
+                      onChange={(event) => setSearchInput(event.target.value)}
+                      placeholder='Ask anything...'
+                      className='flex-1 bg-transparent text-white outline-none placeholder:text-white/45 text-lg'
+                    />
+                    <button type='submit' disabled={!searchInput.trim()} className='text-white/60 hover:text-white disabled:opacity-50'>
+                      <svg className='h-6' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M4 12a8 8 0 0 1 15.15-3.5M4 12a8 8 0 0 0 15.15 3.5M12 2v8m0 6v2"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            {/* Suggested Questions */}
+            <div className='mb-8 px-4'>
+              <div className='space-y-2'>
+                {suggestedQuestions.map((question, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleSuggestionClick(question)}
+                    className='w-full text-left p-3 rounded-lg bg-white/5 hover:bg-white/10 transition text-sm text-white/80'
+                  >
+                    {question}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* News Results Grid */}
+            <div className='mb-8 px-4'>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-8'>
+                {newsResults.map((news, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleSuggestionClick(news.title)}
+                    className='p-4 rounded-lg border border-white/10 hover:border-white/30 bg-white/5 hover:bg-white/10 transition text-left'
+                  >
+                    <h3 className='font-semibold text-white mb-1'>{news.title}</h3>
+                    <p className='text-xs text-white/60'>{news.source}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Capabilities Section */}
+            <div className='px-4'>
+              <h2 className='text-white/60 font-semibold text-sm mb-4'>CAPABILITIES</h2>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                <NavLink to='/Instagram' className='p-4 rounded-lg border border-white/10 hover:border-white/30 bg-white/5 hover:bg-white/10 transition'>
+                  <div className='flex items-center gap-3 mb-2'>
+                    <svg className='h-6 text-pink-500' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"></path>
+                    </svg>
+                    <h3 className='font-semibold text-white'>Post to Instagram</h3>
+                  </div>
+                  <p className='text-sm text-white/70'>Instantly create and publish image posts directly to your Instagram account.</p>
+                </NavLink>
+
+                <NavLink to='/Email' className='p-4 rounded-lg border border-white/10 hover:border-white/30 bg-white/5 hover:bg-white/10 transition'>
+                  <div className='flex items-center gap-3 mb-2'>
+                    <svg className='h-6 text-red-500' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"></path>
+                    </svg>
+                    <h3 className='font-semibold text-white'>Send Emails</h3>
+                  </div>
+                  <p className='text-sm text-white/70'>Draft and send professional emails straight from the chat interface.</p>
+                </NavLink>
+              </div>
+            </div>
+          </div>
         </section>
       </section>
     </main>
