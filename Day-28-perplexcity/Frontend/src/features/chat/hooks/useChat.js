@@ -75,7 +75,7 @@ export const useChat = ()=>{
         dispatch(setLoading(false))
     }
     
-    async function handleOpenChat(chatId){
+    async function handleOpenChat(chatId, chats){
         // Don't refetch if already viewing this chat
         if (currentChatId === chatId) {
             console.log(`⏭️  Already viewing chat ${chatId}, skipping refetch`);
@@ -85,21 +85,24 @@ export const useChat = ()=>{
         try {
             console.log(`👀 Opening chat:`, chatId);
             dispatch(setLoading(true))
-            const data = await getMessages(chatId)
-            const { messages } = data
+            
+            if(chats[ chatId ]?.messages.length === 0){
 
-            console.log(`📨 Got messages for chat ${chatId}:`, messages.length);
-
-            const formattedMessages = messages.map(msg =>({
-                content : msg.content,
-                role : msg.role,
-            }))
-            dispatch(addMessages({
-                chatId,
-                messages : formattedMessages
-            }))
+                const data = await getMessages(chatId)
+                const { messages } = data
+                
+                console.log(`📨 Got messages for chat ${chatId}:`, messages.length);
+                
+                const formattedMessages = messages.map(msg =>({
+                    content : msg.content,
+                    role : msg.role,
+                }))
+                dispatch(addMessages({
+                    chatId,
+                    messages : formattedMessages
+                }))
+            }
             dispatch(setCurrentChatId(chatId))
-            console.log(`✅ Chat ${chatId} loaded, messages:`, formattedMessages.length);
             dispatch(setLoading(false))
         } catch (err) {
             console.error(`❌ Error opening chat:`, err.message);
