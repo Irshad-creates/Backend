@@ -12,7 +12,10 @@ const ChatPage = () => {
   const currentChatId = useSelector((state) => state.chat.currentChatId)
 
   useEffect(() => {
-    chat.handleGetChats()
+    // Don't refetch chats if we already have them
+    if (Object.keys(chats).length === 0) {
+      chat.handleGetChats()
+    }
   }, [])
   
   const handleSubmitMessage = (event) => {
@@ -23,6 +26,7 @@ const ChatPage = () => {
       return
     }
 
+    console.log(`📝 ChatPage: Sending message to currentChatId:`, currentChatId);
     chat.handleSendMessage({ message: trimmedMessage, chatId: currentChatId })
     setChatInput('')
   }

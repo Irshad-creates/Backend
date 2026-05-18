@@ -9,6 +9,14 @@ import authRouter from "./Routes/auth.routes.js"
 import chatRouter from "./routes/chat.routes.js"
 
 const app = express()
+
+// Set request timeout to 65 seconds (slightly more than AI service timeout of 60s)
+app.use((req, res, next) => {
+    req.setTimeout(65000);
+    res.setTimeout(65000);
+    next();
+});
+
 app.use(cookieParser())
 app.use(express.json())
 app.use(cors({

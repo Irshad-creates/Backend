@@ -1,34 +1,62 @@
+import { useEffect } from "react";
 import { initailizeSocketConnection } from "../services/chat.socket";
 import { sendMessage, getChats, getMessages, deleteChats } from "../services/chat.api";
 import {setChats, setCurrentChatId, setLoading, setError, createNewChat, addNewMessage, addMessages } from "../chat.slice"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 
-
+let socketInitialized = false;
 
 export const useChat = ()=>{
     
     const dispatch = useDispatch()
+    const currentChatId = useSelector((state) => state.chat.currentChatId)
+
+    // Initialize socket only once
+    useEffect(() => {
+        if (!socketInitialized) {
+            initailizeSocketConnection(dispatch, addNewMessage);
+            socketInitialized = true;
+        }
+    }, [dispatch])
 
     async function handleSendMessage ({ message, chatId }){
-        dispatch(setLoading(true))
-        const data =await sendMessage( { message, chatId } )    
-        const { chat, aiMessage } = data
-            dispatch(createNewChat({
-            chatId : chat._id,
-            title : chat.title,
-        }))
-        dispatch(addNewMessage({
-            chatId: chatId || chat._id,
-            content : message,
-            role :"user"
-        }))
-        dispatch(addNewMessage({
-            chatId:chatId || chat._id,
-            content : aiMessage.content,
-            role :"ai"
-        }))
-        dispatch(setCurrentChatId(chat._id))
-        // dispatch(setLoading(false))
+        try {
+            dispatch(setLoading(true))
+            console.log(`📤 Sending message to chatId:`, chatId, "message:", message);
+            
+            const data = await sendMessage( { message, chatId } )    
+            const { chat, aiMessage } = data
+            
+            console.log(`📥 Response received:`, { chatId: chat?._id, messageId: aiMessage._id });
+            
+            if(!chatId) {
+                console.log(`🆕 Creating new chat:`, chat._id);
+                dispatch(createNewChat({
+                    chatId : chat._id,
+                    title : chat.title,
+                }))
+            }
+            
+            const finalChatId = chatId || chat._id;
+            console.log(`💾 Adding messages to chatId:`, finalChatId);
+            
+            dispatch(addNewMessage({
+                chatId: finalChatId,
+                content : message,
+                role :"user"
+            }))
+            dispatch(addNewMessage({
+                chatId: finalChatId,
+                content : aiMessage.content,
+                role :"ai"
+            }))
+            dispatch(setCurrentChatId(finalChatId))
+            dispatch(setLoading(false))
+        } catch (err) {
+            console.error(`❌ Error sending message:`, err.message);
+            dispatch(setError(err.message))
+            dispatch(setLoading(false))
+        }
     }
 
     async function handleGetChats() {
@@ -48,27 +76,39 @@ export const useChat = ()=>{
     }
     
     async function handleOpenChat(chatId){
+        // Don't refetch if already viewing this chat
+        if (currentChatId === chatId) {
+            console.log(`⏭️  Already viewing chat ${chatId}, skipping refetch`);
+            return;
+        }
 
-        const data = await getMessages(chatId)
-        const  { messages } = data
+        try {
+            console.log(`👀 Opening chat:`, chatId);
+            dispatch(setLoading(true))
+            const data = await getMessages(chatId)
+            const { messages } = data
 
-        const formattedMessages = messages.map(msg =>({
-            content : msg.content,
-            role : msg.role,
-        }))
-        dispatch(addMessages({
-            chatId,
-            messages : formattedMessages
-        }))
-        dispatch(setCurrentChatId(chatId))
+            console.log(`📨 Got messages for chat ${chatId}:`, messages.length);
 
+            const formattedMessages = messages.map(msg =>({
+                content : msg.content,
+                role : msg.role,
+            }))
+            dispatch(addMessages({
+                chatId,
+                messages : formattedMessages
+            }))
+            dispatch(setCurrentChatId(chatId))
+            console.log(`✅ Chat ${chatId} loaded, messages:`, formattedMessages.length);
+            dispatch(setLoading(false))
+        } catch (err) {
+            console.error(`❌ Error opening chat:`, err.message);
+            dispatch(setError(err.message))
+            dispatch(setLoading(false))
+        }
     }
 
-    
-
-
     return {
-        initailizeSocketConnection,
         handleSendMessage,
         handleGetChats,
         handleOpenChat,

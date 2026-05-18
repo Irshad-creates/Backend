@@ -80,7 +80,9 @@ import { HumanMessage, SystemMessage, AIMessage } from "langchain"
 
 const geminiModel = new ChatGoogleGenerativeAI({
   model: "gemini-2.5-flash-lite",
-  apiKey: process.env.GEMINI_API_KEY
+  apiKey: process.env.GEMINI_API_KEY,
+  temperature: 0.7,
+  maxOutputTokens: 1024
 });
 
 const mistralModel = new ChatMistralAI({
@@ -100,23 +102,53 @@ export async function generateResponse(messages){
 
   }).filter(Boolean)
   
-  const response =  await geminiModel.invoke(formattedMessages)
-return response.text
+  try {
+    // Add timeout of 60 seconds (1 minute)
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("AI response timeout")), 60000)
+    );
+    
+    const response = await Promise.race([
+      // geminiModel.invoke(formattedMessages),
+      mistralModel.invoke(formattedMessages),
+      timeoutPromise
+    ]);
+    
+    return response.text;
+  } catch (error) {
+    console.error("Error generating response:", error);
+    console.error("Error message:", error.message);
+    console.error("Error stack:", error.stack);
+    return "I'm having trouble processing your request. Please try again.";
+  }
 }
 
 export async function generateChatTitle(message) {
-  const response =  await mistralModel.invoke([
-    new SystemMessage(`
-      You are a helpful assistant that generates concise and descriptive titles for chat conversation.
-      
-      User will provide you with the first message of a chat conversation, and you will generate a title that captures the essence of the conversation in 2-4 words. The title should be clear, relevant, and engaging giving users a quick understanding of the chat's topic.
-      `),
+  try {
+    // Add timeout of 30 seconds for title generation
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Title generation timeout")), 30000)
+    );
 
-    new HumanMessage(`
-      Generate a title for a chat conversation based on the following first message:
-      ${message}
-      `)
-  ])
+    const response = await Promise.race([
+      mistralModel.invoke([
+        new SystemMessage(`
+          You are a helpful assistant that generates concise and descriptive titles for chat conversation.
+          
+          User will provide you with the first message of a chat conversation, and you will generate a title that captures the essence of the conversation in 2-4 words. The title should be clear, relevant, and engaging giving users a quick understanding of the chat's topic.
+          `),
 
-  return response.text
+        new HumanMessage(`
+          Generate a title for a chat conversation based on the following first message:
+          ${message}
+          `)
+      ]),
+      timeoutPromise
+    ]);
+
+    return response.text;
+  } catch (error) {
+    console.error("Error generating title:", error.message);
+    return message.substring(0, 50);
+  }
 }

@@ -10,7 +10,8 @@ const Dashboard = () => {
   const navigate = useNavigate()
   const [searchInput, setSearchInput] = useState('')
   const chats = useSelector((state) => state.chat.chats)
-
+  const currentChatId = useSelector((state) => state.chat.currentChatId)
+  
   useEffect(() => {
     chat.handleGetChats()
   }, [])
@@ -21,11 +22,13 @@ const Dashboard = () => {
     if (!trimmedMessage) {
       return
     }
+    console.log(`🏠 Dashboard: Starting chat with currentChatId:`, currentChatId);
     handleStartChat(trimmedMessage)
   }
 
   const handleStartChat = (message) => {
-    chat.handleSendMessage({ message, chatId: null })
+    console.log(`🚀 Dashboard: handleStartChat called with currentChatId:`, currentChatId);
+    chat.handleSendMessage({ message, chatId: currentChatId || null })
     navigate('/chats/new')
     setSearchInput('')
   }
