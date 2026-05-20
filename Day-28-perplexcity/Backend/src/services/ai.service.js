@@ -1,7 +1,8 @@
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatMistralAI } from "@langchain/mistralai"
-import { HumanMessage, SystemMessage, AIMessage } from "langchain"
-
+import { HumanMessage, SystemMessage, AIMessage , tool, createAgent } from "langchain"
+import * as z from 'zod'
+import { searchInternet } from "./internect.service.js";
 
 
   // {import * as z from "zod"
@@ -90,6 +91,22 @@ const mistralModel = new ChatMistralAI({
   apiKey :process.env.MISTRAL_API_KEY
 })
 
+const searchInternetTool = tool(
+  searchInternet,
+  {
+    name : "search_internet",
+    description : "use this tool to get latest information from the internet .",
+    schema: z.object({
+      query : z.string().describe("the search query to look up on the internet")
+    })
+  }
+
+)
+
+const agent = createAgent({
+  model : mistralModel,
+  tools : [searchInternetTool]
+})
 
 export async function generateResponse(messages){
     const formattedMessages = messages.map(msg =>{
@@ -105,16 +122,21 @@ export async function generateResponse(messages){
   try {
     // Add timeout of 60 seconds (1 minute)
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("AI response timeout")), 60000)
+      setTimeout(() => reject(new Error("AI response timeout")), 120000)
     );
     
     const response = await Promise.race([
       // geminiModel.invoke(formattedMessages),
-      mistralModel.invoke(formattedMessages),
+      // mistralModel.invoke(formattedMessages),
+      // agent.invoke({ messages : formattedMessages}),
+      agent.invoke({ messages: formattedMessages }),
       timeoutPromise
     ]);
     
-    return response.text;
+    console.log("Agent response:", JSON.stringify(response, null, 2));
+    const text = response.messages[ response.messages.length - 1 ].text;
+    console.log("Extracted text:", text);
+    return text;
   } catch (error) {
     console.error("Error generating response:", error);
     console.error("Error message:", error.message);
