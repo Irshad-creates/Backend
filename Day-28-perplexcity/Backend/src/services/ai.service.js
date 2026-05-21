@@ -118,6 +118,10 @@ export async function generateResponse(messages){
     return null
 
   }).filter(Boolean)
+
+
+
+  
   
   try {
     // Add timeout of 60 seconds (1 minute)
