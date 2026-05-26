@@ -6,6 +6,7 @@ import Dashboard from "../features/chat/Pages/Dashboard"
 import ChatPage from "../features/chat/Pages/ChatPage"
 import EmailPage from "../features/chat/components/EmailPage"
 import InstaPostPage from "../features/chat/components/InstaPostPage"
+import PublicRoute from "../features/auth/components/PublicRoute"
 
 export const router = createBrowserRouter([
   {
@@ -38,10 +39,18 @@ export const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <Login />,
+    element: (
+      <PublicRoute>
+        <Login />
+      </PublicRoute>
+    ),
   },
   {
     path: "/register",
-    element: <Register />,
+    element: (
+      <PublicRoute>
+        <Register />
+      </PublicRoute>
+    ),
   },
 ])

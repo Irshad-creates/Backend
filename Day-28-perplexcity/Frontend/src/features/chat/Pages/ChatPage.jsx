@@ -4,12 +4,14 @@ import { useSelector } from 'react-redux'
 import { useChat } from '../hooks/useChat'
 import remarkGfm from 'remark-gfm'
 import { NavLink } from "react-router-dom";
+import { useAuth } from '../../auth/Hooks/useAuth.js'
 
 const ChatPage = () => {
   const chat = useChat()
   const [ chatInput, setChatInput ] = useState('')
   const chats = useSelector((state) => state.chat.chats)
   const currentChatId = useSelector((state) => state.chat.currentChatId)
+  const { handleLogout } = useAuth()
 
   useEffect(() => {
     // Don't refetch chats if we already have them
@@ -118,10 +120,19 @@ const ChatPage = () => {
                 <span className='font-medium text-sm'>Username</span>
               </div>
 
-              <div  className='h-2 flex items-center text-zinc-600'>
+              <div  className='flex items-center gap-1 text-zinc-600'>
                 <svg className='h-6 p-1 cursor-pointer hover:text-white' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 17H22V19H2V17H4V10C4 5.58172 7.58172 2 12 2C16.4183 2 20 5.58172 20 10V17ZM18 17V10C18 6.68629 15.3137 4 12 4C8.68629 4 6 6.68629 6 10V17H18ZM9 21H15V23H9V21Z"></path></svg>
               
-                <svg className='h-6 p-1 cursor-pointer hover:text-red-400' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M5 22C4.44772 22 4 21.5523 4 21V3C4 2.44772 4.44772 2 5 2H19C19.5523 2 20 2.44772 20 3V6H18V4H6V20H18V18H20V21C20 21.5523 19.5523 22 19 22H5ZM18 16V13H11V11H18V8L23 12L18 16Z"></path></svg>
+                <button onClick={handleLogout}>
+                  <svg
+                    className='h-6 p-1 cursor-pointer hover:text-red-400'
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M5 22C4.44772 22 4 21.5523 4 21V3C4 2.44772 4.44772 2 5 2H19C19.5523 2 20 2.44772 20 3V6H18V4H6V20H18V18H20V21C20 21.5523 19.5523 22 19 22H5ZM18 16V13H11V11H18V8L23 12L18 16Z"></path>
+                  </svg>
+                </button>
               </div>
           </div>
         </aside>

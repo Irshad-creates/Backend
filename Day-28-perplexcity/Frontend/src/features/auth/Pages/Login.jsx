@@ -22,6 +22,7 @@ const Login = () => {
         if(data?.user){
             navigate("/")
         }
+          console.log("login submit")
     }
 
     if(!Loading && user){
