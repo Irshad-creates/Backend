@@ -36,11 +36,11 @@ export async function sendEmail({to, subject, html, text=""}) {
 
     
 
-    try {
-        await transporter.sendMail(mailOptions); 
-        return "Email sent succesfully to " + to;
-    } catch (error) {
-        console.error("Email send failed:", error);
-        throw new Error(`Email send failed: ${error.message}`);
-    }
+    // try {
+    //     await transporter.sendMail(mailOptions); 
+    //     return "Email sent succesfully to " + to;
+    // } catch (error) {
+    //     console.error("Email send failed:", error);
+    //     throw new Error(`Email send failed: ${error.message}`);
+    // }
 }

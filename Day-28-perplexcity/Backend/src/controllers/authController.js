@@ -1,6 +1,7 @@
 import userModel from "../models/user.model.js"
 import jwt from 'jsonwebtoken'
 import { sendEmail } from "../services/mail.service.js"
+import { blacklistModel } from "../models/blacklist.model.js"
 
 export async function registerUser (req, res){
     
@@ -153,5 +154,34 @@ export async  function getMe(req, res){
         message: "user feteched successfully",
         success: true,
         user
+    })
+}
+
+
+export async function logoutUser(req, res) {
+    const token =  req.cookies.userToken
+    if (!token) {
+        return res.status(401).json({
+            message: "No token provided",
+            success: false
+        })
+    }
+
+    const isTokenAlreadyBlacklisted = await blacklistModel.findOne({
+        token
+    })
+
+    if(isTokenAlreadyBlacklisted){
+        return res.status(400).json({
+            message:"invaild token"
+        })
+    }
+
+    res.clearCookie("userToken")
+
+    await blacklistModel.create({token})
+    
+    return res.status(200).json({
+        message:"token blacklisted succesfully"
     })
 }
