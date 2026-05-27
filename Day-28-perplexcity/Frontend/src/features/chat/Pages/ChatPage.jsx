@@ -37,7 +37,6 @@ const ChatPage = () => {
       return
     }
 
-    console.log(`📝 ChatPage: Sending message to currentChatId:`, currentChatId);
     chat.handleSendMessage({ message: trimmedMessage, chatId: currentChatId })
     setChatInput('')
   }
@@ -52,9 +51,9 @@ const ChatPage = () => {
     handleLogout={handleLogout}
     >
 
-      <section className='w-full min-w-0 flex flex-1 overflow-hidden'>
+      <section className='w-full min-w-0 flex flex-1 overflow-hidden '>
 
-          <div className='mx-auto flex h-full w-full max-w-4xl flex-col px-4 py-4'>
+          <div className='mx-auto flex h-full w-full max-w-4xl flex-col px-4 py-4 '>
 
               <ChatMessages
                   chats={chats}

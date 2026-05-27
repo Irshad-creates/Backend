@@ -6,7 +6,7 @@ const ChatMessages = ({chats, currentChatId, isGenerating}) => {
   return (
             <section className='w-full min-w-0 flex flex-1 overflow-hidden'>
               <div className='mx-auto flex h-full w-full max-w-4xl flex-col px-4 py-4'>
-                <div className='messages flex-1 space-y-3 overflow-y-auto pr-1'>
+                <div className='messages flex-1 space-y-3 overflow-y-auto pr-2 '>
                   
                   {chats[ currentChatId ]?.messages.map((message) => (
                     <div

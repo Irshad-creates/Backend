@@ -33,7 +33,6 @@ export async function sendMessage(req, res) {
         role :"ai"
     })
     
-    console.log(messages);
     
     res.status(201).json({
         title,

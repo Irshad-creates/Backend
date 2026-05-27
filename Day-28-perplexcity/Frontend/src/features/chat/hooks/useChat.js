@@ -42,14 +42,10 @@ export const useChat = ()=>{
 
             const { chat: newChat, aiMessage } = data
 
-            console.log(`📥 Response received:`, {
-                chatId: newChat?._id,
-                messageId: aiMessage._id
-            });
+            
 
             finalChatId = chatId || newChat._id
 
-            console.log(`💾 Adding messages to chatId:`, finalChatId);
 
             // New chat create
             if (!chatId) {
@@ -128,12 +124,10 @@ export const useChat = ()=>{
     async function handleOpenChat(chatId, chats){
         // Don't refetch if already viewing this chat
         if (currentChatId === chatId) {
-            console.log(`⏭️  Already viewing chat ${chatId}, skipping refetch`);
             return;
         }
 
         try {
-            console.log(`👀 Opening chat:`, chatId);
             dispatch(setLoading(true))
             
             if(chats[ chatId ]?.messages.length === 0){
@@ -141,7 +135,6 @@ export const useChat = ()=>{
                 const data = await getMessages(chatId)
                 const { messages } = data
                 
-                console.log(`📨 Got messages for chat ${chatId}:`, messages.length);
                 
                 const formattedMessages = messages.map(msg =>({
                     content : msg.content,

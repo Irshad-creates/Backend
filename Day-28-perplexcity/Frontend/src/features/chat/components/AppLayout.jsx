@@ -8,7 +8,7 @@ const AppLayout = ({ children, chats, openChat, handleLogout}) => {
 
     return (
 
-        <main className='min-h-screen w-full bg-black text-white'>
+        <main className='min-h-screen w-full bg-black text-white scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-[#000000] '>
             <MobileNavbar
                 setIsSidebarOpen={setIsSidebarOpen}
             />

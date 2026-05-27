@@ -18,7 +18,6 @@ export const initailizeSocketConnection = (dispatch, addMessageAction) => {
 
     // Listen for AI responses
     socket.on("aiMessage", (data) => {
-        console.log("Received AI message:", data);
         dispatch(addMessageAction({
             chatId: data.chatId,
             content: data.content,

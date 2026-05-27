@@ -12,7 +12,6 @@ const chatSlice = createSlice({
   reducers: {
     createNewChat: (state, action) => {
       const { chatId, title } = action.payload;
-      console.log(`📌 Redux: Creating new chat ${chatId}`);
       state.chats[chatId] = {
         id: chatId,
         title,
@@ -40,14 +39,10 @@ const chatSlice = createSlice({
       if (!state.chats[chatId].messages) {
         state.chats[chatId].messages = [];
       }
-      console.log(`💬 Redux: Adding ${role} message to chat ${chatId}`);
       state.chats[chatId].messages.push({ content, role, id: Date.now() });
     },
     addMessages: (state, action) => {
       const { chatId, messages } = action.payload;
-      console.log(
-        `📨 Redux: Adding ${messages.length} messages to chat ${chatId}`,
-      );
 
       if (!state.chats[chatId]) {
         console.warn(`⚠️  Redux: Chat ${chatId} does not exist in state`);
@@ -57,13 +52,9 @@ const chatSlice = createSlice({
       state.chats[chatId].messages.push(...messages);
     },
     setChats: (state, action) => {
-      console.log(
-        `🔄 Redux: Setting ${Object.keys(action.payload).length} chats`,
-      );
       state.chats = action.payload;
     },
     setCurrentChatId: (state, action) => {
-      console.log(`🎯 Redux: Setting currentChatId to ${action.payload}`);
       state.currentChatId = action.payload;
     },
     setLoading: (state, action) => {

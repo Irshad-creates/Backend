@@ -27,18 +27,11 @@ const Dashboard = () => {
     if (!trimmedMessage) {
       return;
     }
-    console.log(
-      `🏠 Dashboard: Starting chat with currentChatId:`,
-      currentChatId,
-    );
+
     handleStartChat(trimmedMessage);
   };
 
   const handleStartChat = (message) => {
-    console.log(
-      `🚀 Dashboard: handleStartChat called with currentChatId:`,
-      currentChatId,
-    );
     chat.handleSendMessage({ message, chatId: currentChatId || null });
     navigate("/chats/new");
     setSearchInput("");
@@ -88,7 +81,7 @@ const Dashboard = () => {
 
           <div className="absolute bottom-0 left-1/3 h-[400px] w-[400px] rounded-full bg-purple-500/10 blur-3xl" />
         </div>
-        <div className="mx-auto flex h-full w-full flex-col px-4 py-4 overflow-y-auto">
+        <div className="mx-auto flex h-full w-full flex-col px-4 py-4 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 hover:scrollbar-thumb-white/20 scrollbar-track-transparent">
           {/* Perplexity Logo and Title */}
           <div className="flex flex-col items-center justify-center py-8">
             <div className="flex  items-center justify-center mb-10">
@@ -211,15 +204,15 @@ const Dashboard = () => {
             >
               <div
                 className="
-                flex items-end gap-3
-                rounded-2xl
-                border border-zinc-800
-                bg-zinc-900/70
-                backdrop-blur-xl
-                px-5 py-4
-                shadow-2xl
-                transition-all duration-300
-                focus-within:border-zinc-600
+      flex items-end gap-3
+      rounded-2xl
+      border border-zinc-800
+      bg-zinc-900/70
+      backdrop-blur-xl
+      px-5 py-4
+      shadow-2xl
+      transition-all duration-300
+      focus-within:border-zinc-600
     "
               >
                 <textarea
@@ -228,14 +221,13 @@ const Dashboard = () => {
                   onChange={(event) => setSearchInput(event.target.value)}
                   onInput={(e) => {
                     e.target.style.height = "auto";
-
                     e.target.style.height = `${e.target.scrollHeight}px`;
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault();
 
-                      handleSearchSubmit();
+                      e.currentTarget.form.requestSubmit();
                     }
                   }}
                   placeholder="Ask anything..."
@@ -243,30 +235,32 @@ const Dashboard = () => {
                     scrollbarWidth: "none",
                   }}
                   className="
-    flex-1
-    bg-transparent
-    text-white
-    text-lg
-    outline-none
-    placeholder:text-zinc-500
-    resize-none
-  "
+        flex-1
+        bg-transparent
+        text-white
+        text-lg
+        outline-none
+        placeholder:text-zinc-500
+        resize-none
+        overflow-y-auto
+        max-h-40
+      "
                 />
 
                 <button
                   type="submit"
                   disabled={!searchInput.trim()}
                   className="
-                  flex h-11 w-11 items-center justify-center
-                  rounded-full
-                  bg-zinc-800
-                  text-white
-                  transition-all
-                  hover:bg-zinc-700
-                  hover:scale-105
-                  active:scale-95
-                  disabled:opacity-50
-                "
+        flex h-11 w-11 items-center justify-center
+        rounded-full
+        bg-zinc-800
+        text-white
+        transition-all
+        hover:bg-zinc-700
+        hover:scale-105
+        active:scale-95
+        disabled:opacity-50
+      "
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

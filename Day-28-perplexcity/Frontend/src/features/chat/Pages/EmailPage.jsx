@@ -65,7 +65,6 @@ const EmailPage = () => {
         prompt: "",
       });
     } catch (error) {
-      console.error(error);
 
       toast.error(error.response?.data?.message || "Failed to send email");
     } finally {
