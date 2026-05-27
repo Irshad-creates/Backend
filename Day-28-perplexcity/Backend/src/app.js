@@ -7,6 +7,7 @@ import cors from "cors"
 
 import authRouter from "./Routes/auth.routes.js"
 import chatRouter from "./routes/chat.routes.js"
+import emailRoutes from "./routes/email.routes.js";
 
 const app = express()
 
@@ -29,4 +30,6 @@ app.use(cors({
  */
 app.use("/api/auth", authRouter)
 app.use("/api/chats", chatRouter)
+app.use("/api/email", emailRoutes);
+
 export default app
