@@ -91,37 +91,47 @@ const Dashboard = () => {
         <div className="mx-auto flex h-full w-full flex-col px-4 py-4 overflow-y-auto">
           {/* Perplexity Logo and Title */}
           <div className="flex flex-col items-center justify-center py-8">
-            <div className="flex items-center justify-center mb-10">
+            <div className="flex  items-center justify-center mb-10">
               <svg
                 role="img"
-                className="h-6"
+                className="h-14 sm:h-16 md:h-20 "
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
-                className="h-20 mb-3"
               >
                 <path d="M5.73486 2L11.4299 7.24715V7.24595V2.01211H12.5385V7.27063L18.2591 2V7.98253H20.6078V16.6118H18.2663V21.9389L12.5385 16.9066V21.9967H11.4299V16.9896L5.74131 22V16.6118H3.39258V7.98253H5.73486V2ZM10.5942 9.0776H4.50118V15.5167H5.73992V13.4856L10.5942 9.0776ZM6.84986 13.9715V19.5565L11.4299 15.5225V9.81146L6.84986 13.9715ZM12.5704 15.4691L17.1577 19.4994V16.6118H17.1518V13.9663L12.5704 9.80608V15.4691ZM18.2663 15.5167H19.4992V9.0776H13.4516L18.2663 13.4399V15.5167ZM17.1505 7.98253V4.51888L13.3911 7.98253H17.1505ZM10.6028 7.98253L6.84346 4.51888V7.98253H10.6028Z"></path>
               </svg>
-              <h1 className="text-8xl font-light mb-8">Perplexity</h1>
+
+              <h1
+                className="
+                text-5xl
+                sm:text-6xl
+                md:text-8xl
+                font-light
+                text-center
+                leading-none
+              ">
+                Perplexity
+              </h1>
             </div>
             {/* Categories */}
-            <div className="flex gap-3 mb-8 flex-wrap justify-center">
+            <div className="flex gap-1.5 md:gap-3 mb-8 flex-nowrap justify-center px-2 overflow-x-auto">
               <button
                 onClick={() => handleSuggestionClick("Trending Tech")}
-                className="flex items-center px-3 py-2 rounded-full border text-zinc-500 border-white/30 hover:border-white hover:text-white cursor-pointer text-sm transition"
+                className="flex items-center gap-1 px-2 py-1 rounded-full border text-zinc-500 border-white/30 hover:border-white hover:text-white cursor-pointer text-[10px] sm:text-xs md:text-sm transition whitespace-nowrap md:px-3 md:py-2"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   stroke="currentColor"
                   class="size-6"
-                  className="h-5 "
+                  className="h-4 w-4 md:h-5 md:w-5 shrink-0"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418"
                   />
                 </svg>
@@ -129,20 +139,20 @@ const Dashboard = () => {
               </button>
               <button
                 onClick={() => handleSuggestionClick("Startups")}
-                className="flex items-center px-3 py-2 rounded-full border text-zinc-500 border-white/30 hover:border-white hover:text-white cursor-pointer text-sm transition"
+                className="flex items-center gap-1 px-2 py-1 rounded-full border text-zinc-500 border-white/30 hover:border-white hover:text-white cursor-pointer text-[10px] sm:text-xs md:text-sm transition whitespace-nowrap md:px-3 md:py-2"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   stroke="currentColor"
                   class="size-6"
-                  className="h-5 "
+                  className="h-4 w-4 md:h-5 md:w-5 shrink-0"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
                   />
                 </svg>
@@ -150,20 +160,20 @@ const Dashboard = () => {
               </button>
               <button
                 onClick={() => handleSuggestionClick("AI Tools")}
-                className="flex items-center px-3 py-2 rounded-full border text-zinc-500 border-white/30 hover:border-white hover:text-white cursor-pointer text-sm transition"
+                className="flex items-center gap-1 px-2 py-1 rounded-full border text-zinc-500 border-white/30 hover:border-white hover:text-white cursor-pointer text-[10px] sm:text-xs md:text-sm transition whitespace-nowrap md:px-3 md:py-2"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   stroke="currentColor"
                   class="size-6"
-                  className="h-5 "
+                  className="h-4 w-4 md:h-5 md:w-5 shrink-0"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"
                   />
                 </svg>
@@ -171,7 +181,7 @@ const Dashboard = () => {
               </button>
               <button
                 onClick={() => handleSuggestionClick("Gadgets")}
-                className="flex items-center px-3 py-2 rounded-full border text-zinc-500 border-white/30 hover:border-white hover:text-white cursor-pointer text-sm transition"
+                className="flex items-center gap-1 px-2 py-1 rounded-full border text-zinc-500 border-white/30 hover:border-white hover:text-white cursor-pointer text-[10px] sm:text-xs md:text-sm transition whitespace-nowrap md:px-3 md:py-2"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -180,11 +190,11 @@ const Dashboard = () => {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   class="lucide lucide-compass-icon lucide-compass"
-                  className="h-5 "
+                  className="h-4 w-4 md:h-5 md:w-5 shrink-0"
                 >
                   <circle cx="12" cy="12" r="10" />
                   <path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z" />
