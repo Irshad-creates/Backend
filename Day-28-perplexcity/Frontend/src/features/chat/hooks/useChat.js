@@ -3,6 +3,7 @@ import { initailizeSocketConnection } from "../services/chat.socket";
 import { sendMessage, getChats, getMessages, deleteChats } from "../services/chat.api";
 import {setChats, setCurrentChatId, setLoading, setError, createNewChat , updateChatTitle , addNewMessage, addMessages , setGenerating, appendToMessage } from "../chat.slice"
 import { useDispatch, useSelector } from "react-redux"
+import toast from "react-hot-toast";
 
 let socketInitialized = false;
 
@@ -164,8 +165,9 @@ export const useChat = ()=>{
         try {
             await deleteChats(chatId)
             dispatch(removeChat(chatId))
+            toast.success("Chat deleted");
         } catch (err) {
-            console.error("❌ Error deleting chat:", err.message)
+            toast.error("Failed to delete chat");
         }
     }
 

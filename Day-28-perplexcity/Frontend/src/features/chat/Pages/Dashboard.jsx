@@ -110,7 +110,8 @@ const Dashboard = () => {
                 font-light
                 text-center
                 leading-none
-              ">
+              "
+              >
                 Perplexity
               </h1>
             </div>
@@ -204,7 +205,6 @@ const Dashboard = () => {
             </div>
 
             {/* Search Input */}
-            {/* Search Input */}
             <form
               onSubmit={handleSearchSubmit}
               className="w-full max-w-3xl mb-10"
@@ -226,16 +226,31 @@ const Dashboard = () => {
                   rows={1}
                   value={searchInput}
                   onChange={(event) => setSearchInput(event.target.value)}
+                  onInput={(e) => {
+                    e.target.style.height = "auto";
+
+                    e.target.style.height = `${e.target.scrollHeight}px`;
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+
+                      handleSearchSubmit();
+                    }
+                  }}
                   placeholder="Ask anything..."
+                  style={{
+                    scrollbarWidth: "none",
+                  }}
                   className="
-                  max-h-40 min-h-16
-                  flex-1 resize-none
-                  bg-transparent
-                  text-white
-                  text-lg
-                  outline-none
-                  placeholder:text-zinc-500
-      "
+    flex-1
+    bg-transparent
+    text-white
+    text-lg
+    outline-none
+    placeholder:text-zinc-500
+    resize-none
+  "
                 />
 
                 <button

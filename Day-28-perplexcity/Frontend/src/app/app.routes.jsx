@@ -4,7 +4,7 @@ import Register from "../features/auth/Pages/Register";
 import Protected from "../features/auth/components/Protected";
 import Dashboard from "../features/chat/Pages/Dashboard";
 import ChatPage from "../features/chat/Pages/ChatPage";
-import EmailPage from "../features/chat/components/EmailPage";
+import EmailPage from "../features/chat/Pages/EmailPage";
 import PublicRoute from "../features/auth/components/PublicRoute";
 import ChatsPage from "../features/chat/components/ChatsPage";
 

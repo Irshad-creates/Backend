@@ -22,20 +22,32 @@ const ChatInput = ({ chatInput, setChatInput, handleSubmitMessage }) => {
             rows={1}
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
+            onInput={(e) => {
+              e.target.style.height = "auto";
+
+              e.target.style.height = `${e.target.scrollHeight}px`;
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+
+                handleSubmitMessage(e);
+              }
+            }}
             placeholder="Ask anything..."
-            className="
-                    max-h-40 min-h-12
-                    flex-1 resize-none
-                    bg-transparent
-                    text-white
-                    placeholder:text-zinc-500
-                    outline-none
-                "
+            style={{
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
+            className=" max-h-40 min-h-12 flex-1  bg-transparent text-white placeholder:text-zinc-500 outline-none resize-none textarea::-webkit-scrollbar {
+  display: none;
+}"
+            
           />
 
           <button
             type="submit"
-            className="
+            className=" 
                     flex h-11 w-11 items-center justify-center
                     rounded-full
                     bg-zinc-800
