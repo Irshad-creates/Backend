@@ -18,6 +18,9 @@ const embeddings = new MistralAIEmbeddings({
 
 
 
+
+
+
 const docs = await loader.load()
 const fullText = docs.map(doc => doc.pageContent).join('\n')
 const texts = await splitter.splitText(fullText)
